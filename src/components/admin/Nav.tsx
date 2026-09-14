@@ -17,10 +17,17 @@ const ENTRIES: Entry[] = [
   { href: "/admin/collections/pages", label: "Pages", countSlug: "pages" },
   { href: "/admin/collections/blog", label: "Blog", countSlug: "blog" },
   { href: "/admin/collections/products", label: "Products", countSlug: "products" },
+  {
+    href: "/admin/collections/house-designs",
+    label: "House Designs",
+    countSlug: "house-designs",
+  },
   { href: "/admin/collections/orders", label: "Orders", countSlug: "orders" },
   { href: "/admin/collections/users", label: "Users", countSlug: "users" },
   { href: "/admin/collections/media", label: "Media", countSlug: "media" },
   { href: "/admin/collections/templates", label: "Templates", countSlug: "templates" },
+  { href: "/admin/collections/components", label: "Components", countSlug: "components" },
+  { href: "/admin/collections/styles", label: "Styles", countSlug: "styles" },
   { href: "/admin/globals/settings", label: "Settings", isGlobal: true },
 ];
 

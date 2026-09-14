@@ -1,28 +1,61 @@
-/* Aska admin theme — my own CSS, dark green accent. */
+/* Aska admin theme — modular design tokens bridged from Settings → Admin
+   Theme via the --admin-* custom properties (see layout.tsx, which injects
+   the live per-theme values scoped by :root[data-theme]; the var()
+   fallbacks below are the shipped defaults, used until that Settings doc
+   is saved). Each --admin-* name is reused across both theme scopes below
+   (never on a bare `:root`) — that's what a previous version got wrong:
+   an unscoped :root override of --theme-elevation-1000 leaked into dark
+   mode too, since `:root` IS <html> regardless of its data-theme value,
+   making text invisible against a same-toned background.
+
+   Primary Button Text Color forces white per Settings — note white on the
+   default #6395DA accent is only ~3.1:1 contrast, under WCAG AA's 4.5:1
+   for normal text; change that field in Settings if you want AA here. */
 :root {
-  --theme-success-500: #1f3a2e;
-  --theme-success-600: #16281f;
-  --theme-success-400: #2f5c48;
-  --theme-elevation-1000: #101a15;
+  --theme-success-500: var(--admin-primary, #6395da);
+  --theme-success-600: var(--admin-primary, #6395da);
+  --theme-success-400: var(--admin-primary, #6395da);
+  --accessibility-outline: 2px solid var(--admin-focus, #6395da);
 }
 
-html[data-theme="dark"] {
-  --theme-success-500: #6cb28c;
-  --theme-success-600: #85c6a4;
-  --theme-success-400: #5a9c78;
+:root[data-theme="light"] {
+  --theme-elevation-0: var(--admin-main-bg, #ffffff);
+  --theme-elevation-50: var(--admin-card-bg, #f8fafc);
+  --theme-elevation-800: var(--admin-base-text, #0f172a);
+  --theme-elevation-1000: var(--admin-base-text, #0f172a);
+  --theme-elevation-400: var(--admin-muted-text, #64748b);
+  --theme-border-color: var(--admin-border, #e2e8f0);
 }
 
-/* Primary buttons → dark green. */
+:root[data-theme="dark"] {
+  --theme-elevation-0: var(--admin-main-bg, #141e2c);
+  --theme-elevation-50: var(--admin-card-bg, #1b2638);
+  --theme-elevation-800: var(--admin-base-text, #f8fafc);
+  --theme-elevation-1000: var(--admin-base-text, #f8fafc);
+  --theme-elevation-400: var(--admin-muted-text, #94a3b8);
+  --theme-border-color: var(--admin-border, #2d3748);
+}
+
+/* Primary buttons / CTAs → brand accent, forced high-contrast text. */
 button.btn--style-primary,
 a.btn--style-primary {
   background: var(--theme-success-500);
   border-color: var(--theme-success-500);
-  color: #fff;
+  color: var(--admin-primary-text, #ffffff);
+  font-weight: 600;
   &:hover,
   &:focus {
-    background: var(--theme-success-600);
-    border-color: var(--theme-success-600);
+    background: color-mix(in srgb, var(--theme-success-500) 85%, black);
+    border-color: color-mix(in srgb, var(--theme-success-500) 85%, black);
   }
+}
+
+/* Requirement: Settings title (and any doc title) must never clip. */
+.doc-header__title,
+.doc-header__title.render-title {
+  overflow: visible !important;
+  text-overflow: unset !important;
+  white-space: normal !important;
 }
 
 /* Status pill styling on list rows. */
@@ -45,6 +78,10 @@ a.btn--style-primary {
 }
 
 /* ---------------- Custom sidebar (AskaNav) ---------------- */
+/* Independent sidebar surface/text — separate from the main content bg/text. */
+.nav {
+  background: var(--admin-sidebar-bg, var(--theme-elevation-0));
+}
 .aska-nav {
   display: flex;
   flex-direction: column;
@@ -52,7 +89,7 @@ a.btn--style-primary {
   padding: 20px 14px;
   font-family:
     ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-  color: var(--theme-elevation-1000);
+  color: var(--admin-sidebar-text, var(--theme-elevation-1000));
 }
 .aska-nav__brand {
   display: flex;
@@ -88,17 +125,17 @@ a.btn--style-primary {
   padding: 8px 10px;
   border-radius: 6px;
   font-size: 14px;
-  color: color-mix(in srgb, var(--theme-elevation-1000) 78%, transparent);
+  color: color-mix(in srgb, var(--admin-sidebar-text, var(--theme-elevation-1000)) 78%, transparent);
   text-decoration: none;
   transition: background 0.1s, color 0.1s;
   &:hover {
-    background: color-mix(in srgb, var(--theme-elevation-1000) 5%, transparent);
-    color: var(--theme-elevation-1000);
+    background: color-mix(in srgb, var(--admin-sidebar-text, var(--theme-elevation-1000)) 5%, transparent);
+    color: var(--admin-sidebar-text, var(--theme-elevation-1000));
   }
   &.is-active {
-    color: var(--theme-elevation-1000);
+    color: var(--admin-focus, #6395da);
     font-weight: 600;
-    background: color-mix(in srgb, var(--theme-elevation-1000) 6%, transparent);
+    background: color-mix(in srgb, var(--admin-sidebar-text, var(--theme-elevation-1000)) 6%, transparent);
   }
 }
 .aska-nav__label {
@@ -115,7 +152,7 @@ a.btn--style-primary {
   gap: 10px;
   margin-top: 16px;
   padding: 10px;
-  border-top: 1px solid color-mix(in srgb, var(--theme-elevation-1000) 8%, transparent);
+  border-top: 1px solid color-mix(in srgb, var(--admin-sidebar-text, var(--theme-elevation-1000)) 8%, transparent);
 }
 .aska-nav__avatar {
   display: grid;

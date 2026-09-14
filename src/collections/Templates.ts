@@ -1,4 +1,5 @@
 import type { CollectionConfig } from "payload";
+import { isContentManager } from "@/lib/auth/roles";
 
 /**
  * Slugs of collections that can be rendered through a template. Add new
@@ -7,6 +8,7 @@ import type { CollectionConfig } from "payload";
 export const RENDERABLE_COLLECTIONS = [
   { label: "Blog Posts", value: "blog" },
   { label: "Products", value: "products" },
+  { label: "House Designs", value: "house-designs" },
 ] as const;
 
 export const Templates: CollectionConfig = {
@@ -25,7 +27,12 @@ export const Templates: CollectionConfig = {
       },
     },
   },
-  access: { read: () => true },
+  access: {
+    read: () => true,
+    create: isContentManager,
+    update: isContentManager,
+    delete: isContentManager,
+  },
   fields: [
     { name: "name", type: "text", required: true },
     {

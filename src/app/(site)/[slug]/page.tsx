@@ -1,6 +1,7 @@
 import { readPage } from "@/lib/pages/repo";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
+import { RenderedHtml } from "@/components/RenderedHtml";
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -41,7 +42,7 @@ export default async function Page({ params }: Props) {
   return (
     <>
       {page.css && <style dangerouslySetInnerHTML={{ __html: page.css }} />}
-      <div dangerouslySetInnerHTML={{ __html: page.html }} />
+      <RenderedHtml html={page.html} />
     </>
   );
 }

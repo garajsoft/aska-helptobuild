@@ -1,4 +1,6 @@
 import type { GlobalConfig, Field } from "payload";
+import { isContentManager } from "@/lib/auth/roles";
+import { ADMIN_THEME_DEFAULTS } from "@/lib/settings/adminTheme";
 
 const providerFields = (
   provider: "stripe" | "paypal" | "square",
@@ -52,7 +54,7 @@ const providerFields = (
 
 export const Settings: GlobalConfig = {
   slug: "settings",
-  access: { read: () => true },
+  access: { read: () => true, update: isContentManager },
   admin: { description: "Site-wide settings." },
   fields: [
     {
@@ -94,6 +96,169 @@ export const Settings: GlobalConfig = {
                     description:
                       "Widgets to show on /admin. Deselect any to hide them.",
                   },
+                },
+              ],
+            },
+          ],
+        },
+        {
+          label: "Branding",
+          description:
+            "Site logos and favicon. Exposed at /api/globals/settings?depth=1 and as {{settings.logoLight}}, {{settings.logoDark}}, {{settings.favicon}} placeholders in the editor.",
+          fields: [
+            {
+              name: "logoLight",
+              type: "upload",
+              relationTo: "media",
+              label: "Light logo",
+              admin: { description: "For light backgrounds — main header/hero." },
+            },
+            {
+              name: "logoDark",
+              type: "upload",
+              relationTo: "media",
+              label: "Dark logo",
+              admin: { description: "For dark backgrounds — footer or dark sections." },
+            },
+            {
+              name: "favicon",
+              type: "upload",
+              relationTo: "media",
+              label: "Favicon",
+              admin: { description: "Browser tab icon — .ico, .png, or .svg." },
+            },
+          ],
+        },
+        {
+          label: "Admin Theme",
+          description:
+            "Colors for the /admin dashboard itself (not the public site). Applies live on next page load — no rebuild needed.",
+          fields: [
+            {
+              type: "collapsible",
+              label: "Global Accent & Button Tokens",
+              admin: { initCollapsed: false },
+              fields: [
+                {
+                  name: "adminPrimaryColor",
+                  type: "text",
+                  label: "Primary / accent color",
+                  defaultValue: ADMIN_THEME_DEFAULTS.primary,
+                  admin: { description: "CTA buttons, links, active nav state." },
+                },
+                {
+                  name: "adminPrimaryButtonText",
+                  type: "text",
+                  label: "Primary button text color",
+                  defaultValue: ADMIN_THEME_DEFAULTS.primaryButtonText,
+                  admin: {
+                    description:
+                      "Forces high contrast on primary buttons. Note: white on the default accent (#6395DA) is ~3.1:1 — under WCAG AA's 4.5:1 for normal text.",
+                  },
+                },
+                {
+                  name: "adminFocusColor",
+                  type: "text",
+                  label: "Focus ring / active link color",
+                  defaultValue: ADMIN_THEME_DEFAULTS.focus,
+                },
+              ],
+            },
+            {
+              type: "collapsible",
+              label: "Light Theme",
+              admin: { initCollapsed: false },
+              fields: [
+                {
+                  name: "lightMainBackground",
+                  type: "text",
+                  label: "Light main background",
+                  defaultValue: ADMIN_THEME_DEFAULTS.light.mainBg,
+                },
+                {
+                  name: "lightCardBackground",
+                  type: "text",
+                  label: "Light card / panel background",
+                  defaultValue: ADMIN_THEME_DEFAULTS.light.cardBg,
+                },
+                {
+                  name: "lightBaseText",
+                  type: "text",
+                  label: "Light base text color",
+                  defaultValue: ADMIN_THEME_DEFAULTS.light.baseText,
+                },
+                {
+                  name: "lightMutedText",
+                  type: "text",
+                  label: "Light secondary / muted text",
+                  defaultValue: ADMIN_THEME_DEFAULTS.light.mutedText,
+                },
+                {
+                  name: "lightBorderColor",
+                  type: "text",
+                  label: "Light border color",
+                  defaultValue: ADMIN_THEME_DEFAULTS.light.border,
+                },
+                {
+                  name: "lightSidebarBackground",
+                  type: "text",
+                  label: "Light sidebar background",
+                  defaultValue: ADMIN_THEME_DEFAULTS.light.sidebarBg,
+                },
+                {
+                  name: "lightSidebarText",
+                  type: "text",
+                  label: "Light sidebar text / link color",
+                  defaultValue: ADMIN_THEME_DEFAULTS.light.sidebarText,
+                },
+              ],
+            },
+            {
+              type: "collapsible",
+              label: "Dark Theme",
+              admin: { initCollapsed: false },
+              fields: [
+                {
+                  name: "darkMainBackground",
+                  type: "text",
+                  label: "Dark main background",
+                  defaultValue: ADMIN_THEME_DEFAULTS.dark.mainBg,
+                },
+                {
+                  name: "darkCardBackground",
+                  type: "text",
+                  label: "Dark card / panel background",
+                  defaultValue: ADMIN_THEME_DEFAULTS.dark.cardBg,
+                },
+                {
+                  name: "darkBaseText",
+                  type: "text",
+                  label: "Dark base text color",
+                  defaultValue: ADMIN_THEME_DEFAULTS.dark.baseText,
+                },
+                {
+                  name: "darkMutedText",
+                  type: "text",
+                  label: "Dark secondary / muted text",
+                  defaultValue: ADMIN_THEME_DEFAULTS.dark.mutedText,
+                },
+                {
+                  name: "darkBorderColor",
+                  type: "text",
+                  label: "Dark border color",
+                  defaultValue: ADMIN_THEME_DEFAULTS.dark.border,
+                },
+                {
+                  name: "darkSidebarBackground",
+                  type: "text",
+                  label: "Dark sidebar background",
+                  defaultValue: ADMIN_THEME_DEFAULTS.dark.sidebarBg,
+                },
+                {
+                  name: "darkSidebarText",
+                  type: "text",
+                  label: "Dark sidebar text / link color",
+                  defaultValue: ADMIN_THEME_DEFAULTS.dark.sidebarText,
                 },
               ],
             },

@@ -5,6 +5,8 @@ import { convertLexicalToHTML } from "@payloadcms/richtext-lexical/html";
 import config from "@/payload.config";
 import { readTemplateForCollection } from "@/lib/templates/repo";
 import { renderTemplate } from "@/lib/templates/render";
+import { getBrandingAssets } from "@/lib/settings/repo";
+import { RenderedHtml } from "@/components/RenderedHtml";
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -81,11 +83,15 @@ export default async function Page({ params }: Props) {
       </div>
     );
   }
-  const rendered = renderTemplate(template.html, flattenLexical(doc as Record<string, unknown>));
+  const settings = await getBrandingAssets();
+  const rendered = renderTemplate(template.html, {
+    ...flattenLexical(doc as Record<string, unknown>),
+    settings,
+  });
   return (
     <>
       {template.css && <style dangerouslySetInnerHTML={{ __html: template.css }} />}
-      <div dangerouslySetInnerHTML={{ __html: rendered }} />
+      <RenderedHtml html={rendered} />
     </>
   );
 }

@@ -5,6 +5,22 @@ import Link from "next/link";
 import type { Editor } from "grapesjs";
 import "grapesjs/dist/css/grapes.min.css";
 
+interface ComponentDoc {
+  id: string | number;
+  name: string;
+  category: string;
+  html?: string | null;
+  css?: string | null;
+  js?: string | null;
+  thumbnail?: { url?: string | null } | string | null;
+}
+
+function componentBlockContent(c: ComponentDoc): string {
+  const style = c.css ? `<style>${c.css}</style>` : "";
+  const script = c.js ? `<script>${c.js}</script>` : "";
+  return `${c.html ?? ""}${style}${script}`;
+}
+
 export type EditorTarget =
   | { mode: "page"; slug: string; title: string }
   | { mode: "template"; id: string | number; name: string; postTypeSlug: string | null };
@@ -101,6 +117,8 @@ export function GrapesEditor({ target, initial, fields = [] }: Props) {
         style: initial.css || "",
         plugins: [presetWebpage, blocksBasic, forms],
         pluginsOpts: { "grapesjs-blocks-basic": { flexGrid: true } },
+        parser: { optionsHtml: { allowScripts: true } },
+        canvas: { styles: ["/api/styles/tokens.css"] },
       });
 
       // Add built-in placeholders (title, slug) always available.
@@ -115,6 +133,21 @@ export function GrapesEditor({ target, initial, fields = [] }: Props) {
         category: "Fields",
         content: "<code>{{slug}}</code>",
       });
+      bm.add("aska-settings-logo-light", {
+        label: "Logo (light)",
+        category: "Branding",
+        content: '<img src="{{settings.logoLight.url}}" alt="{{settings.logoLight.alt}}">',
+      });
+      bm.add("aska-settings-logo-dark", {
+        label: "Logo (dark)",
+        category: "Branding",
+        content: '<img src="{{settings.logoDark.url}}" alt="{{settings.logoDark.alt}}">',
+      });
+      bm.add("aska-settings-favicon", {
+        label: "Favicon",
+        category: "Branding",
+        content: '<img src="{{settings.favicon.url}}" alt="Favicon">',
+      });
       for (const f of fields) {
         if (f.name === "title" || f.name === "slug") continue;
         bm.add(`aska-field-${f.name}`, {
@@ -124,6 +157,32 @@ export function GrapesEditor({ target, initial, fields = [] }: Props) {
         });
       }
 
+      // User-managed blocks from the Components collection — no hardcoded
+      // components here, admins add/edit these from the dashboard.
+      try {
+        const res = await fetch("/api/components?limit=200&depth=1", {
+          credentials: "include",
+        });
+        if (res.ok && !cancelled) {
+          const data = (await res.json()) as { docs?: ComponentDoc[] };
+          for (const c of data.docs ?? []) {
+            const thumb =
+              typeof c.thumbnail === "object" ? c.thumbnail?.url ?? null : null;
+            bm.add(`aska-component-${c.id}`, {
+              label: c.name,
+              category: c.category,
+              media: thumb
+                ? `<img src="${thumb}" style="width:100%;height:100%;object-fit:cover" />`
+                : undefined,
+              content: componentBlockContent(c),
+            });
+          }
+        }
+      } catch {
+        // Editor still works without user components (e.g. offline/dev).
+      }
+
+      if (cancelled) return;
       editorRef.current = editor;
     })();
     return () => {

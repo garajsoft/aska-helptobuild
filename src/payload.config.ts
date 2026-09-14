@@ -13,13 +13,14 @@ import { Blog } from "./collections/Blog";
 import { Users } from "./collections/Users";
 import { Media } from "./collections/Media";
 import { Templates } from "./collections/Templates";
+import { Components } from "./collections/Components";
+import { Styles } from "./collections/Styles";
+import { HouseDesigns } from "./collections/HouseDesigns";
 import { Settings } from "./globals/Settings";
+import { isSignedIn } from "./lib/auth/isSignedIn";
 
 const filename = fileURLToPath(import.meta.url);
 const dirname = path.dirname(filename);
-
-// Simple starter access: any signed-in user is admin. Tighten before shipping.
-const isSignedIn = ({ req }: { req: { user?: unknown } }) => Boolean(req.user);
 
 export default buildConfig({
   admin: {
@@ -40,7 +41,7 @@ export default buildConfig({
       ],
     },
   },
-  collections: [Pages, Blog, Templates, Users, Media],
+  collections: [Pages, Blog, Templates, Components, Styles, HouseDesigns, Users, Media],
   globals: [Settings],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || "",
@@ -78,6 +79,37 @@ export default buildConfig({
       } catch (err) {
         payload.logger.error({ err }, "Schema push failed");
       }
+    }
+
+    // Safety net so an RBAC rollout can never lock everyone out of /admin —
+    // runs on every boot (dev included); cheap no-op once an admin-capable
+    // user already exists.
+    try {
+      const admins = await payload.count({
+        collection: "users",
+        where: { roles: { in: ["super-admin", "admin", "editor"] } },
+      });
+      if (admins.totalDocs === 0) {
+        const { docs } = await payload.find({
+          collection: "users",
+          limit: 1,
+          sort: "createdAt",
+        });
+        const first = docs[0];
+        if (first) {
+          await payload.update({
+            collection: "users",
+            id: first.id,
+            data: { roles: "super-admin" },
+            context: { skipRoleGuard: true },
+          });
+          payload.logger.warn(
+            `No admin-capable user existed — promoted ${first.email} to super-admin.`
+          );
+        }
+      }
+    } catch (err) {
+      payload.logger.error({ err }, "Admin-role safety-net check failed");
     }
   },
   plugins: [
