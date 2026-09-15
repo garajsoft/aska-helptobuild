@@ -1,3 +1,4 @@
+import { ImportExportBar as ImportExportBar_fe1dae61a40bb0abedc3d68901692b4f } from '@/components/admin/importExport/ImportExportBar'
 import { EditPageVisuallyLink as EditPageVisuallyLink_805f564b144f7de2d46541978422d084 } from '@/components/admin/EditVisuallyLink'
 import { ViewPageLink as ViewPageLink_8541fefe4ac6831585dcd9454ebf5c30 } from '@/components/admin/ViewLink'
 import { RscEntryLexicalCell as RscEntryLexicalCell_44fe37237e0ebf4470c9990d8cb7b07e } from '@payloadcms/richtext-lexical/rsc'
@@ -26,7 +27,7 @@ import { BlockquoteFeatureClient as BlockquoteFeatureClient_e70f5e05f09f93e00b99
 import { HorizontalRuleFeatureClient as HorizontalRuleFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
 import { ViewBlogLink as ViewBlogLink_8541fefe4ac6831585dcd9454ebf5c30 } from '@/components/admin/ViewLink'
 import { EditTemplateVisuallyLink as EditTemplateVisuallyLink_805f564b144f7de2d46541978422d084 } from '@/components/admin/EditVisuallyLink'
-import { CategoryField as CategoryField_3669ae15046090ba11f242f897924b2a } from '@/components/admin/fields/CategoryField'
+import { ComponentPreview as ComponentPreview_3a31e422d1cf5258c19aefa4dede13f2 } from '@/components/admin/ComponentPreview'
 import { VariantOptionsSelector as VariantOptionsSelector_b91672ccd6e8b071c11142ab941fedfb } from '@payloadcms/plugin-ecommerce/rsc'
 import { PriceCell as PriceCell_e27bf7b8cc50640dcdd584767b8eac3c } from '@payloadcms/plugin-ecommerce/client'
 import { PriceInput as PriceInput_b91672ccd6e8b071c11142ab941fedfb } from '@payloadcms/plugin-ecommerce/rsc'
@@ -39,6 +40,7 @@ import { CollectionCards as CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1 } f
 
 /** @type import('payload').ImportMap */
 export const importMap = {
+  "@/components/admin/importExport/ImportExportBar#ImportExportBar": ImportExportBar_fe1dae61a40bb0abedc3d68901692b4f,
   "@/components/admin/EditVisuallyLink#EditPageVisuallyLink": EditPageVisuallyLink_805f564b144f7de2d46541978422d084,
   "@/components/admin/ViewLink#ViewPageLink": ViewPageLink_8541fefe4ac6831585dcd9454ebf5c30,
   "@payloadcms/richtext-lexical/rsc#RscEntryLexicalCell": RscEntryLexicalCell_44fe37237e0ebf4470c9990d8cb7b07e,
@@ -67,7 +69,7 @@ export const importMap = {
   "@payloadcms/richtext-lexical/client#HorizontalRuleFeatureClient": HorizontalRuleFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
   "@/components/admin/ViewLink#ViewBlogLink": ViewBlogLink_8541fefe4ac6831585dcd9454ebf5c30,
   "@/components/admin/EditVisuallyLink#EditTemplateVisuallyLink": EditTemplateVisuallyLink_805f564b144f7de2d46541978422d084,
-  "@/components/admin/fields/CategoryField#CategoryField": CategoryField_3669ae15046090ba11f242f897924b2a,
+  "@/components/admin/ComponentPreview#ComponentPreview": ComponentPreview_3a31e422d1cf5258c19aefa4dede13f2,
   "@payloadcms/plugin-ecommerce/rsc#VariantOptionsSelector": VariantOptionsSelector_b91672ccd6e8b071c11142ab941fedfb,
   "@payloadcms/plugin-ecommerce/client#PriceCell": PriceCell_e27bf7b8cc50640dcdd584767b8eac3c,
   "@payloadcms/plugin-ecommerce/rsc#PriceInput": PriceInput_b91672ccd6e8b071c11142ab941fedfb,

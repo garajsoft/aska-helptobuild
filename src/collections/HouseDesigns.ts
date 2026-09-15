@@ -1,8 +1,9 @@
 import type { CollectionConfig } from "payload";
 import { isSignedIn } from "@/lib/auth/isSignedIn";
 import { isEditorOrAbove } from "@/lib/auth/roles";
+import { withImportExportUI } from "@/lib/importExport/withImportExportUI";
 
-export const HouseDesigns: CollectionConfig = {
+export const HouseDesigns: CollectionConfig = withImportExportUI({
   slug: "house-designs",
   labels: { singular: "House Design", plural: "House Designs" },
   admin: {
@@ -64,4 +65,4 @@ export const HouseDesigns: CollectionConfig = {
       ],
     },
   ],
-};
+});

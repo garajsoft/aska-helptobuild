@@ -1,22 +1,29 @@
 import type { CollectionConfig } from "payload";
 import { isContentManager } from "@/lib/auth/roles";
+import { withImportExportUI } from "@/lib/importExport/withImportExportUI";
 
 /**
- * Suggested category names offered in the admin UI's datalist. `category`
- * is a free-text field — these are starting points, not a fixed enum, so
- * users can also type any custom category name.
+ * Fixed category list for the GrapesJS block manager grouping. "custom"
+ * is a sentinel: when selected, the real category comes from the sibling
+ * `customCategory` free-text field instead (see COMPONENT_CATEGORY_CUSTOM_VALUE
+ * and Components.customCategory's admin.condition below).
  */
-export const COMPONENT_CATEGORY_SUGGESTIONS = [
-  "Headers",
-  "Heroes",
-  "Features",
-  "Specs",
-  "Forms",
-  "Galleries",
-  "Footers",
+export const COMPONENT_CATEGORY_CUSTOM_VALUE = "custom";
+
+export const COMPONENT_CATEGORY_OPTIONS = [
+  { label: "Header", value: "header" },
+  { label: "Footer", value: "footer" },
+  { label: "Hero", value: "hero" },
+  { label: "Feature", value: "feature" },
+  { label: "Card", value: "card" },
+  { label: "CTA", value: "cta" },
+  { label: "Pricing", value: "pricing" },
+  { label: "Form", value: "form" },
+  { label: "Slider", value: "slider" },
+  { label: "Custom", value: COMPONENT_CATEGORY_CUSTOM_VALUE },
 ] as const;
 
-export const Components: CollectionConfig = {
+export const Components: CollectionConfig = withImportExportUI({
   slug: "components",
   labels: { singular: "Component", plural: "Components" },
   admin: {
@@ -36,15 +43,22 @@ export const Components: CollectionConfig = {
     { name: "name", type: "text", required: true },
     {
       name: "category",
-      type: "text",
+      type: "select",
       required: true,
-      defaultValue: "Heroes",
+      defaultValue: "hero",
+      options: COMPONENT_CATEGORY_OPTIONS as unknown as { label: string; value: string }[],
       admin: {
-        description:
-          "Groups this block in the GrapesJS block manager. Pick a suggestion or type your own.",
-        components: {
-          Field: "@/components/admin/fields/CategoryField#CategoryField",
-        },
+        description: "Groups this block in the GrapesJS block manager.",
+      },
+    },
+    {
+      name: "customCategory",
+      type: "text",
+      label: "Custom category",
+      admin: {
+        description: "Category name used when \"Custom\" is selected above.",
+        condition: (_data, siblingData) =>
+          siblingData?.category === COMPONENT_CATEGORY_CUSTOM_VALUE,
       },
     },
     { name: "thumbnail", type: "upload", relationTo: "media" },
@@ -55,5 +69,14 @@ export const Components: CollectionConfig = {
     },
     { name: "css", type: "code", admin: { language: "css" } },
     { name: "js", type: "code", admin: { language: "javascript" } },
+    {
+      type: "ui",
+      name: "componentPreview",
+      admin: {
+        components: {
+          Field: "@/components/admin/ComponentPreview#ComponentPreview",
+        },
+      },
+    },
   ],
-};
+});

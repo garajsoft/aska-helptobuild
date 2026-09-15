@@ -1,6 +1,6 @@
 // No "server-only" guard: these are pure predicates (no DB/Node APIs) and
-// Components.ts (imported by the client-side CategoryField) pulls this in
-// transitively via isContentManager.
+// Components.ts (imported client-side by GrapesEditor for its category
+// options) pulls this in transitively via isContentManager.
 export type Role = "super-admin" | "admin" | "editor" | "customer";
 
 export const ROLE_OPTIONS: { label: string; value: Role }[] = [

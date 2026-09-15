@@ -4,15 +4,32 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import type { Editor } from "grapesjs";
 import "grapesjs/dist/css/grapes.min.css";
+import {
+  COMPONENT_CATEGORY_CUSTOM_VALUE,
+  COMPONENT_CATEGORY_OPTIONS,
+} from "@/collections/Components";
 
 interface ComponentDoc {
   id: string | number;
   name: string;
   category: string;
+  customCategory?: string | null;
   html?: string | null;
   css?: string | null;
   js?: string | null;
   thumbnail?: { url?: string | null } | string | null;
+}
+
+const CATEGORY_LABEL_BY_VALUE: Record<string, string> = Object.fromEntries(
+  COMPONENT_CATEGORY_OPTIONS.map((o) => [o.value, o.label])
+);
+
+/** Block-manager category label: the custom category text, or the fixed option's label. */
+function categoryLabel(c: ComponentDoc): string {
+  if (c.category === COMPONENT_CATEGORY_CUSTOM_VALUE) {
+    return c.customCategory?.trim() || "Custom";
+  }
+  return CATEGORY_LABEL_BY_VALUE[c.category] ?? c.category;
 }
 
 function componentBlockContent(c: ComponentDoc): string {
@@ -170,7 +187,7 @@ export function GrapesEditor({ target, initial, fields = [] }: Props) {
               typeof c.thumbnail === "object" ? c.thumbnail?.url ?? null : null;
             bm.add(`aska-component-${c.id}`, {
               label: c.name,
-              category: c.category,
+              category: categoryLabel(c),
               media: thumb
                 ? `<img src="${thumb}" style="width:100%;height:100%;object-fit:cover" />`
                 : undefined,

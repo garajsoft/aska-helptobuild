@@ -1,6 +1,7 @@
 import type { CollectionConfig } from "payload";
+import { withImportExportUI } from "@/lib/importExport/withImportExportUI";
 
-export const Pages: CollectionConfig = {
+export const Pages: CollectionConfig = withImportExportUI({
   slug: "pages",
   admin: {
     useAsTitle: "title",
@@ -67,4 +68,4 @@ export const Pages: CollectionConfig = {
       admin: { language: "css", description: "CSS from GrapesJS." },
     },
   ],
-};
+});

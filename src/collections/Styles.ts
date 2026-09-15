@@ -1,5 +1,6 @@
 import type { CollectionConfig } from "payload";
 import { isContentManager } from "@/lib/auth/roles";
+import { withImportExportUI } from "@/lib/importExport/withImportExportUI";
 
 export const STYLE_CATEGORIES = [
   { label: "Color", value: "Color" },
@@ -42,7 +43,7 @@ const FONT_WEIGHTS = [
 const isCategory = (value: string) => (_data: unknown, siblingData: unknown) =>
   (siblingData as { category?: string })?.category === value;
 
-export const Styles: CollectionConfig = {
+export const Styles: CollectionConfig = withImportExportUI({
   slug: "styles",
   labels: { singular: "Style Token", plural: "Styles" },
   admin: {
@@ -198,4 +199,4 @@ export const Styles: CollectionConfig = {
       },
     },
   ],
-};
+});

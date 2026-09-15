@@ -18,6 +18,7 @@ import { Styles } from "./collections/Styles";
 import { HouseDesigns } from "./collections/HouseDesigns";
 import { Settings } from "./globals/Settings";
 import { isSignedIn } from "./lib/auth/isSignedIn";
+import { withImportExportUI } from "./lib/importExport/withImportExportUI";
 
 const filename = fileURLToPath(import.meta.url);
 const dirname = path.dirname(filename);
@@ -131,38 +132,42 @@ export default buildConfig({
         // editable and the storefront (/products/[slug]) couldn't resolve anything.
         // Add the merchandising fields and keep every default field the plugin
         // generates (inventory, priceInUSD/EUR/GBP).
-        productsCollectionOverride: ({ defaultCollection }) => ({
-          ...defaultCollection,
-          admin: {
-            ...defaultCollection.admin,
-            useAsTitle: "name",
-            defaultColumns: ["name", "slug", "_status", "updatedAt"],
-            listSearchableFields: ["name", "slug"],
-          },
-          fields: [
-            { name: "name", type: "text", required: true },
-            {
-              name: "slug",
-              type: "text",
-              required: true,
-              unique: true,
-              index: true,
-              admin: { description: "URL segment: /products/<slug>." },
+        productsCollectionOverride: ({ defaultCollection }) =>
+          withImportExportUI({
+            ...defaultCollection,
+            admin: {
+              ...defaultCollection.admin,
+              useAsTitle: "name",
+              defaultColumns: ["name", "slug", "_status", "updatedAt"],
+              listSearchableFields: ["name", "slug"],
             },
-            {
-              name: "description",
-              type: "richText",
-              label: "Description",
-            },
-            {
-              name: "images",
-              type: "upload",
-              relationTo: "media",
-              hasMany: true,
-            },
-            ...defaultCollection.fields,
-          ],
-        }),
+            fields: [
+              { name: "name", type: "text", required: true },
+              {
+                name: "slug",
+                type: "text",
+                required: true,
+                unique: true,
+                index: true,
+                admin: { description: "URL segment: /products/<slug>." },
+              },
+              {
+                name: "description",
+                type: "richText",
+                label: "Description",
+              },
+              {
+                name: "images",
+                type: "upload",
+                relationTo: "media",
+                hasMany: true,
+              },
+              ...defaultCollection.fields,
+            ],
+          }),
+      },
+      orders: {
+        ordersCollectionOverride: ({ defaultCollection }) => withImportExportUI(defaultCollection),
       },
       currencies: {
         supportedCurrencies: [USD, EUR, GBP],
