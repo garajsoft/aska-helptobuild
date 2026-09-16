@@ -16,6 +16,12 @@ const ENTRIES: Entry[] = [
   { href: "/admin", label: "Dashboard" },
   { href: "/admin/collections/pages", label: "Pages", countSlug: "pages" },
   { href: "/admin/collections/blog", label: "Blog", countSlug: "blog" },
+  { href: "/admin/collections/forms", label: "Forms", countSlug: "forms" },
+  {
+    href: "/admin/collections/form-submissions",
+    label: "Form Submissions",
+    countSlug: "form-submissions",
+  },
   { href: "/admin/collections/products", label: "Products", countSlug: "products" },
   {
     href: "/admin/collections/house-designs",
@@ -28,6 +34,11 @@ const ENTRIES: Entry[] = [
   { href: "/admin/collections/templates", label: "Templates", countSlug: "templates" },
   { href: "/admin/collections/components", label: "Components", countSlug: "components" },
   { href: "/admin/collections/styles", label: "Styles", countSlug: "styles" },
+  {
+    href: "/admin/collections/code-snippets",
+    label: "Code Snippets",
+    countSlug: "code-snippets",
+  },
   { href: "/admin/globals/settings", label: "Settings", isGlobal: true },
 ];
 

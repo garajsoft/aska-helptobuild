@@ -28,6 +28,7 @@ import { HorizontalRuleFeatureClient as HorizontalRuleFeatureClient_e70f5e05f09f
 import { ViewBlogLink as ViewBlogLink_8541fefe4ac6831585dcd9454ebf5c30 } from '@/components/admin/ViewLink'
 import { EditTemplateVisuallyLink as EditTemplateVisuallyLink_805f564b144f7de2d46541978422d084 } from '@/components/admin/EditVisuallyLink'
 import { ComponentPreview as ComponentPreview_3a31e422d1cf5258c19aefa4dede13f2 } from '@/components/admin/ComponentPreview'
+import { ComponentPreviewToggle as ComponentPreviewToggle_d40df2e32cf811ff308d4b227a4c2ac1 } from '@/components/admin/ComponentPreviewToggle'
 import { VariantOptionsSelector as VariantOptionsSelector_b91672ccd6e8b071c11142ab941fedfb } from '@payloadcms/plugin-ecommerce/rsc'
 import { PriceCell as PriceCell_e27bf7b8cc50640dcdd584767b8eac3c } from '@payloadcms/plugin-ecommerce/client'
 import { PriceInput as PriceInput_b91672ccd6e8b071c11142ab941fedfb } from '@payloadcms/plugin-ecommerce/rsc'
@@ -70,6 +71,7 @@ export const importMap = {
   "@/components/admin/ViewLink#ViewBlogLink": ViewBlogLink_8541fefe4ac6831585dcd9454ebf5c30,
   "@/components/admin/EditVisuallyLink#EditTemplateVisuallyLink": EditTemplateVisuallyLink_805f564b144f7de2d46541978422d084,
   "@/components/admin/ComponentPreview#ComponentPreview": ComponentPreview_3a31e422d1cf5258c19aefa4dede13f2,
+  "@/components/admin/ComponentPreviewToggle#ComponentPreviewToggle": ComponentPreviewToggle_d40df2e32cf811ff308d4b227a4c2ac1,
   "@payloadcms/plugin-ecommerce/rsc#VariantOptionsSelector": VariantOptionsSelector_b91672ccd6e8b071c11142ab941fedfb,
   "@payloadcms/plugin-ecommerce/client#PriceCell": PriceCell_e27bf7b8cc50640dcdd584767b8eac3c,
   "@payloadcms/plugin-ecommerce/rsc#PriceInput": PriceInput_b91672ccd6e8b071c11142ab941fedfb,

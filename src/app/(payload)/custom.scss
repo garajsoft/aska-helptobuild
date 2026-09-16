@@ -77,6 +77,41 @@ a.btn--style-primary {
   white-space: nowrap;
 }
 
+/* ---------------- Fixed sidebar / independent content scroll ----------------
+   Payload's own grid (.template-default: nav column | wrap column) already
+   keeps .nav sticky with .nav__scroll independently scrollable — left
+   `display:grid` alone so the mobile nav-toggler's grid-template-columns
+   slide animation keeps working. The only gap: the grid has no height cap,
+   so the whole document scrolled as one page (nav just happened to stay put
+   via sticky). Capping it to the viewport turns that into two real
+   independent scroll panes with no double scrollbar, and .doc-controls'
+   sticky save bar now sticks to the content pane's top instead of the
+   page's, which is what it was already trying to do. */
+.template-default {
+  height: 100vh;
+  max-height: 100vh;
+  overflow: hidden;
+}
+.template-default__wrap {
+  height: 100vh;
+  max-height: 100vh;
+  overflow-y: auto;
+}
+
+/* Components collection: Split View/Fullscreen header buttons (see
+   ComponentPreviewToggle). Secondary style already gives them the Save
+   button's height/padding/radius (same `size="medium"` .btn base) — these
+   overrides only touch the CSS custom properties .btn reads for color, so
+   nothing here needs !important. */
+.aska-header-preview-btn {
+  --color: #2563eb;
+  --bg-color: #ffffff;
+  --btn-border: 1px solid #2563eb;
+  --hover-color: #2563eb;
+  --hover-bg: #eff6ff;
+  --hover-btn-border: 1px solid #2563eb;
+}
+
 /* ---------------- Custom sidebar (AskaNav) ---------------- */
 /* Independent sidebar surface/text — separate from the main content bg/text. */
 .nav {

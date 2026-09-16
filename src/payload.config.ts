@@ -16,6 +16,9 @@ import { Templates } from "./collections/Templates";
 import { Components } from "./collections/Components";
 import { Styles } from "./collections/Styles";
 import { HouseDesigns } from "./collections/HouseDesigns";
+import { Forms } from "./collections/Forms";
+import { FormSubmissions } from "./collections/FormSubmissions";
+import { CodeSnippets } from "./collections/CodeSnippets";
 import { Settings } from "./globals/Settings";
 import { isSignedIn } from "./lib/auth/isSignedIn";
 import { withImportExportUI } from "./lib/importExport/withImportExportUI";
@@ -42,7 +45,19 @@ export default buildConfig({
       ],
     },
   },
-  collections: [Pages, Blog, Templates, Components, Styles, HouseDesigns, Users, Media],
+  collections: [
+    Pages,
+    Blog,
+    Templates,
+    Components,
+    Styles,
+    HouseDesigns,
+    Forms,
+    FormSubmissions,
+    CodeSnippets,
+    Users,
+    Media,
+  ],
   globals: [Settings],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || "",

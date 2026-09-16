@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { getStyleTokensCss } from "@/lib/styles/repo";
 import { getBrandingAssets } from "@/lib/settings/repo";
+import { getCodeSnippetsByLocation } from "@/lib/codeSnippets/repo";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -25,22 +26,56 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function RootLayout({ children }: LayoutProps<"/">) {
-  const tokensCss = await getStyleTokensCss();
+  const [tokensCss, snippets] = await Promise.all([
+    getStyleTokensCss(),
+    getCodeSnippetsByLocation(),
+  ]);
+
+  // <head> can only take `children` OR `dangerouslySetInnerHTML`, never both —
+  // and a Code Snippet's `code` already carries its own tags (<script>,
+  // <style>, <meta>, ...), so those tags must land as head's *direct*
+  // children. Nesting them inside another element (e.g. a wrapping <div>)
+  // doesn't work: the browser's HTML parser only accepts metadata content
+  // directly inside <head> and relocates anything else (and everything
+  // after it) into <body>. One raw string covering the whole of <head> is
+  // what actually gets after_head_open/before_head_end sitting where they're
+  // supposed to. This doesn't fight Next's own metadata tags (title, icons
+  // from generateMetadata below) — those are inserted by React's hoistable
+  // head mechanism independently of this element's own children/props.
+  const headHtml = [
+    snippets.after_head_open,
+    tokensCss ? `<style id="aska-style-tokens">${tokensCss}</style>` : "",
+    snippets.before_head_end,
+  ]
+    .filter(Boolean)
+    .join("\n");
+
   return (
     <html
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <head>
-        {tokensCss ? (
-          <style
-            id="aska-style-tokens"
+      <head suppressHydrationWarning dangerouslySetInnerHTML={{ __html: headHtml }} />
+      <body className="min-h-full flex flex-col">
+        {/* display:contents so an (often display:none anyway, e.g. GTM's
+            noscript iframe) injected snippet never becomes its own box in
+            body's flex layout. */}
+        {snippets.after_body_open && (
+          <div
+            style={{ display: "contents" }}
             suppressHydrationWarning
-            dangerouslySetInnerHTML={{ __html: tokensCss }}
+            dangerouslySetInnerHTML={{ __html: snippets.after_body_open }}
           />
-        ) : null}
-      </head>
-      <body className="min-h-full flex flex-col">{children}</body>
+        )}
+        {children}
+        {snippets.before_body_end && (
+          <div
+            style={{ display: "contents" }}
+            suppressHydrationWarning
+            dangerouslySetInnerHTML={{ __html: snippets.before_body_end }}
+          />
+        )}
+      </body>
     </html>
   );
 }

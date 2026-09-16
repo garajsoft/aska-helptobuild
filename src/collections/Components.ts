@@ -32,6 +32,17 @@ export const Components: CollectionConfig = withImportExportUI({
     defaultColumns: ["name", "category", "updatedAt"],
     description:
       "Reusable blocks fed into the GrapesJS block manager. Use {{fieldName}} placeholders for template binding; {{{fieldName}}} to render raw HTML.",
+    components: {
+      // Split View/Fullscreen entry buttons, left of Save in the doc-controls
+      // header. Registered only here, so no other collection's editor ever
+      // renders them — that scoping is Payload's own per-collection slot,
+      // not a runtime slug check.
+      edit: {
+        beforeDocumentControls: [
+          "@/components/admin/ComponentPreviewToggle#ComponentPreviewToggle",
+        ],
+      },
+    },
   },
   access: {
     read: () => true,

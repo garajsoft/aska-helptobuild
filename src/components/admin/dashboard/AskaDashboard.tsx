@@ -30,6 +30,19 @@ async function loadEnabledWidgets(): Promise<Set<WidgetKey>> {
   }
 }
 
+async function loadFormStats(): Promise<{ submissions: number; forms: number } | null> {
+  try {
+    const payload = await getPayload({ config });
+    const [submissions, forms] = await Promise.all([
+      payload.count({ collection: "form-submissions" }),
+      payload.count({ collection: "forms" }),
+    ]);
+    return { submissions: submissions.totalDocs, forms: forms.totalDocs };
+  } catch {
+    return null;
+  }
+}
+
 // A tiny hand-rolled sparkline. Original SVG, no library, no branded palette.
 function TrafficChart() {
   const points = [
@@ -94,6 +107,7 @@ function Widget({
 
 export const AskaDashboard = async () => {
   const enabled = await loadEnabledWidgets();
+  const formStats = enabled.has("form_submissions") ? await loadFormStats() : null;
 
   return (
     <section className="aska-dashboard">
@@ -114,7 +128,11 @@ export const AskaDashboard = async () => {
           </Widget>
         )}
         {enabled.has("form_submissions") && (
-          <Widget title="Form submissions" value="—" hint="no forms collection yet" />
+          <Widget
+            title="Form submissions"
+            value={formStats?.submissions ?? "—"}
+            hint={formStats ? `across ${formStats.forms} form${formStats.forms === 1 ? "" : "s"}` : "unavailable"}
+          />
         )}
         {enabled.has("conversions") && (
           <Widget title="Conversions" value="—" hint="wire to Stripe / analytics" />

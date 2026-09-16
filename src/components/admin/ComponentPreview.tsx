@@ -2,8 +2,8 @@
 
 import { useEffect, useMemo, useState, type CSSProperties } from "react";
 import { Button, useFormFields } from "@payloadcms/ui";
+import { setPreviewMode, usePreviewMode, type PreviewMode } from "./componentPreviewStore";
 
-type PreviewMode = "closed" | "split" | "fullscreen";
 type Viewport = "desktop" | "tablet" | "mobile";
 
 const VIEWPORT_WIDTHS: Record<Viewport, string> = {
@@ -110,9 +110,14 @@ function frameWrapperStyle(mode: PreviewMode, viewport: Viewport): CSSProperties
  * Components.ts). Renders those three fields' live form values (via
  * useFormFields) into a sandboxed iframe, in either a side-panel or a
  * fullscreen overlay with Desktop/Tablet/Mobile width presets.
+ *
+ * Its open/closed mode is shared state (componentPreviewStore) — the entry
+ * buttons that open it live in the header instead (ComponentPreviewToggle),
+ * not here.
  */
 export const ComponentPreview = () => {
-  const [mode, setMode] = useState<PreviewMode>("closed");
+  const mode = usePreviewMode();
+  const setMode = setPreviewMode;
   const [viewport, setViewport] = useState<Viewport>("desktop");
 
   const html = useFormFields(([fields]) => (fields.html?.value as string | undefined) ?? "");
@@ -137,74 +142,63 @@ export const ComponentPreview = () => {
     };
   }, [mode]);
 
+  if (mode === "closed") return null;
+
   return (
     <div style={{ margin: "8px 0 16px" }}>
-      {mode === "closed" && (
-        <div style={headerGroupStyle}>
-          <Button size="small" buttonStyle="secondary" onClick={() => setMode("split")}>
-            Split View
-          </Button>
-          <Button size="small" buttonStyle="secondary" onClick={() => setMode("fullscreen")}>
-            Fullscreen
-          </Button>
-        </div>
-      )}
-
-      {mode !== "closed" && (
-        <div style={containerStyle(mode)}>
-          <div style={headerStyle}>
-            <div style={headerGroupStyle}>
-              <span style={titleStyle}>Live Preview</span>
-              {mode === "fullscreen" &&
-                (Object.keys(VIEWPORT_LABELS) as Viewport[]).map((v) => (
-                  <Button
-                    key={v}
-                    size="small"
-                    buttonStyle={viewport === v ? "primary" : "secondary"}
-                    onClick={() => setViewport(v)}
-                  >
-                    {VIEWPORT_LABELS[v]}
-                  </Button>
-                ))}
-            </div>
-            <div style={headerGroupStyle}>
-              <Button
-                size="small"
-                buttonStyle={mode === "split" ? "primary" : "secondary"}
-                onClick={() => setMode("split")}
-              >
-                Split View
-              </Button>
-              <Button
-                size="small"
-                buttonStyle={mode === "fullscreen" ? "primary" : "secondary"}
-                onClick={() => setMode("fullscreen")}
-              >
-                Fullscreen
-              </Button>
-              <Button
-                size="small"
-                buttonStyle="secondary"
-                aria-label="Close preview"
-                onClick={() => setMode("closed")}
-              >
-                Close ✕
-              </Button>
-            </div>
+      <div style={containerStyle(mode)}>
+        <div style={headerStyle}>
+          <div style={headerGroupStyle}>
+            <span style={titleStyle}>Live Preview</span>
+            {mode === "fullscreen" &&
+              (Object.keys(VIEWPORT_LABELS) as Viewport[]).map((v) => (
+                <Button
+                  key={v}
+                  size="small"
+                  buttonStyle={viewport === v ? "primary" : "secondary"}
+                  onClick={() => setViewport(v)}
+                >
+                  {VIEWPORT_LABELS[v]}
+                </Button>
+              ))}
           </div>
-
-          <div style={frameOuterStyle}>
-            <div style={frameWrapperStyle(mode, viewport)}>
-              <iframe
-                title="Component live preview"
-                srcDoc={srcDoc}
-                sandbox="allow-scripts"
-                style={{ width: "100%", height: "100%", border: "none", display: "block" }}
-              />
-            </div>
+          <div style={headerGroupStyle}>
+            <Button
+              size="small"
+              buttonStyle={mode === "split" ? "primary" : "secondary"}
+              onClick={() => setMode("split")}
+            >
+              Split View
+            </Button>
+            <Button
+              size="small"
+              buttonStyle={mode === "fullscreen" ? "primary" : "secondary"}
+              onClick={() => setMode("fullscreen")}
+            >
+              Fullscreen
+            </Button>
+            <Button
+              size="small"
+              buttonStyle="secondary"
+              aria-label="Close preview"
+              onClick={() => setMode("closed")}
+            >
+              Close ✕
+            </Button>
           </div>
         </div>
-      )}
+
+        <div style={frameOuterStyle}>
+          <div style={frameWrapperStyle(mode, viewport)}>
+            <iframe
+              title="Component live preview"
+              srcDoc={srcDoc}
+              sandbox="allow-scripts"
+              style={{ width: "100%", height: "100%", border: "none", display: "block" }}
+            />
+          </div>
+        </div>
+      </div>
     </div>
   );
 };
