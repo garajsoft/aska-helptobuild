@@ -413,6 +413,28 @@ export function GrapesEditor({ target, initial, fields = EMPTY_FIELDS }: Props) 
           tab-size: 2;
           letter-spacing: 0;
         }
+
+        /* This installed GrapesJS (0.23.x) and its plugins render every
+           panel/toolbar/search icon as inline SVG (fill: currentColor) —
+           checked node_modules/grapesjs/dist/css/grapes.min.css and every
+           plugin here for an icon @font-face (gjs-icons, FontAwesome,
+           Material Icons): none exists, so --font-master's !important
+           can't produce tofu glyphs today, since font-family never affects
+           SVG path rendering. This rule is a no-cost guard for if that ever
+           changes (a future plugin adding an icon font): revert instead of
+           naming specific icon-font families, so it hands font-family back
+           to whatever that plugin's own CSS sets rather than us guessing
+           font names that may not match it. */
+        .gjs-pn-btn,
+        .gjs-icon,
+        [class^="gjs-i-"],
+        [class*=" gjs-i-"],
+        .fa,
+        .fas,
+        .far,
+        .material-icons {
+          font-family: revert !important;
+        }
       `}</style>
       <div ref={containerRef} className="flex-1 overflow-hidden" />
 
