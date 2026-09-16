@@ -1,6 +1,12 @@
 import type { GlobalConfig, Field } from "payload";
 import { isContentManager } from "@/lib/auth/roles";
 import { ADMIN_THEME_DEFAULTS } from "@/lib/settings/adminTheme";
+import { TYPOGRAPHY_DEFAULTS } from "@/lib/settings/typography";
+
+const isFontProvider = (value: "google_fonts" | "custom_upload") => (
+  _data: unknown,
+  siblingData: unknown
+) => (siblingData as { fontProvider?: string })?.fontProvider === value;
 
 const providerFields = (
   provider: "stripe" | "paypal" | "square",
@@ -126,6 +132,112 @@ export const Settings: GlobalConfig = {
               relationTo: "media",
               label: "Favicon",
               admin: { description: "Browser tab icon — .ico, .png, or .svg." },
+            },
+          ],
+        },
+        {
+          label: "Typography",
+          description:
+            "The site's master font — applied to body text and form controls everywhere via --font-master. Exposed at /api/globals/settings and read by (site)/layout.tsx.",
+          fields: [
+            {
+              name: "typography",
+              type: "group",
+              fields: [
+                {
+                  name: "fontProvider",
+                  type: "select",
+                  defaultValue: TYPOGRAPHY_DEFAULTS.fontProvider,
+                  options: [
+                    { label: "Google Fonts", value: "google_fonts" },
+                    { label: "Custom upload", value: "custom_upload" },
+                  ],
+                },
+                {
+                  name: "googleFontUrl",
+                  type: "text",
+                  label: "Google Fonts stylesheet URL",
+                  admin: {
+                    description:
+                      "e.g. https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300..800;1,300..800&display=swap",
+                    condition: isFontProvider("google_fonts"),
+                  },
+                },
+                {
+                  name: "fontFamilyName",
+                  type: "text",
+                  label: "CSS font-family value",
+                  admin: {
+                    description:
+                      "Full CSS stack including fallback, e.g. 'Plus Jakarta Sans', sans-serif — this is what --font-master is set to.",
+                    condition: isFontProvider("google_fonts"),
+                  },
+                },
+                {
+                  name: "customFontLibrary",
+                  type: "array",
+                  label: "Custom font library",
+                  admin: {
+                    condition: isFontProvider("custom_upload"),
+                    description: "Upload every font you might use here, then pick the active one below.",
+                  },
+                  fields: [
+                    {
+                      name: "label",
+                      type: "text",
+                      required: true,
+                      admin: { description: "e.g. \"Playfair Display Bold\"." },
+                    },
+                    {
+                      name: "fontFamilyName",
+                      type: "text",
+                      required: true,
+                      label: "CSS font-family value",
+                      admin: { description: "e.g. 'Playfair Display', serif." },
+                    },
+                    { name: "fontFile", type: "upload", relationTo: "media", required: true },
+                    {
+                      name: "fontWeight",
+                      type: "select",
+                      defaultValue: "400",
+                      options: ["300", "400", "500", "600", "700"].map((v) => ({
+                        label: v,
+                        value: v,
+                      })),
+                    },
+                    {
+                      name: "fontStyle",
+                      type: "select",
+                      defaultValue: "normal",
+                      options: [
+                        { label: "Normal", value: "normal" },
+                        { label: "Italic", value: "italic" },
+                      ],
+                    },
+                  ],
+                },
+                {
+                  name: "activeCustomFont",
+                  type: "text",
+                  label: "Active font",
+                  admin: {
+                    condition: isFontProvider("custom_upload"),
+                    description: "Which font-library entry above is live as --font-master.",
+                    components: {
+                      Field: "@/components/admin/ActiveCustomFontSelect#ActiveCustomFontSelect",
+                    },
+                  },
+                },
+                {
+                  name: "applyToAdminUI",
+                  type: "checkbox",
+                  label: "Also apply to the admin dashboard",
+                  defaultValue: TYPOGRAPHY_DEFAULTS.applyToAdminUI,
+                  admin: {
+                    description: "Uses the same font in /admin so the editor UI matches the site.",
+                  },
+                },
+              ],
             },
           ],
         },

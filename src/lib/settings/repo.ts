@@ -2,6 +2,13 @@ import "server-only";
 import { getPayload } from "payload";
 import config from "@/payload.config";
 import { ADMIN_THEME_DEFAULTS, buildAdminThemeCss, type AdminThemeVars } from "./adminTheme";
+import {
+  TYPOGRAPHY_DEFAULTS,
+  type FontLibraryEntry,
+  type FontStyle,
+  type FontWeight,
+  type TypographySettings,
+} from "./typography";
 
 export async function getHomepageSlug(): Promise<string | null> {
   const p = await getPayload({ config });
@@ -84,4 +91,67 @@ export async function getAdminThemeCss(): Promise<string> {
     },
   };
   return buildAdminThemeCss(vars);
+}
+
+interface FontLibraryEntryDoc {
+  id: string;
+  label?: string | null;
+  fontFamilyName?: string | null;
+  fontFile?: { url?: string; filename?: string; mimeType?: string } | number | string | null;
+  fontWeight?: FontWeight | null;
+  fontStyle?: FontStyle | null;
+}
+
+interface TypographySettingsDoc {
+  typography?: {
+    fontProvider?: "google_fonts" | "custom_upload";
+    googleFontUrl?: string | null;
+    fontFamilyName?: string | null;
+    customFontLibrary?: FontLibraryEntryDoc[] | null;
+    activeCustomFont?: string | null;
+    applyToAdminUI?: boolean | null;
+  };
+}
+
+/** woff2/ttf/otf — from the uploaded file's extension, since Media doesn't
+ * carry a separate "this is a font, here's its format" field. */
+function fontFormatFromMedia(
+  v: FontLibraryEntryDoc["fontFile"]
+): FontLibraryEntry["fileFormat"] {
+  const name = v && typeof v === "object" ? (v.filename ?? v.url ?? "") : "";
+  const ext = name.split(".").pop()?.toLowerCase();
+  if (ext === "woff2") return "woff2";
+  if (ext === "ttf") return "truetype";
+  if (ext === "otf") return "opentype";
+  return null;
+}
+
+function fileUrl(v: FontLibraryEntryDoc["fontFile"]): string | null {
+  return v && typeof v === "object" ? (v.url ?? null) : null;
+}
+
+/** Settings → Typography, normalized for typography.ts's CSS/HTML builders. */
+export async function getTypographySettings(): Promise<TypographySettings> {
+  const p = await getPayload({ config });
+  // depth: 1 so each library entry's `fontFile` upload relationship resolves
+  // to its `url`/`filename`.
+  const s = (await p.findGlobal({ slug: "settings", depth: 1 })) as TypographySettingsDoc;
+  const t = s.typography ?? {};
+  const customFontLibrary: FontLibraryEntry[] = (t.customFontLibrary ?? []).map((entry) => ({
+    id: entry.id,
+    label: entry.label ?? "",
+    fontFamilyName: entry.fontFamilyName ?? "",
+    fileUrl: fileUrl(entry.fontFile),
+    fileFormat: fontFormatFromMedia(entry.fontFile),
+    fontWeight: entry.fontWeight ?? "400",
+    fontStyle: entry.fontStyle ?? "normal",
+  }));
+  return {
+    fontProvider: t.fontProvider ?? TYPOGRAPHY_DEFAULTS.fontProvider,
+    googleFontUrl: t.googleFontUrl ?? "",
+    fontFamilyName: t.fontFamilyName ?? TYPOGRAPHY_DEFAULTS.fontFamilyName,
+    customFontLibrary,
+    activeCustomFontId: t.activeCustomFont ?? "",
+    applyToAdminUI: t.applyToAdminUI ?? TYPOGRAPHY_DEFAULTS.applyToAdminUI,
+  };
 }

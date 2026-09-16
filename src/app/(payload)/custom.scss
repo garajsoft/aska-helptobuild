@@ -1,3 +1,37 @@
+/* Code editors must never inherit --font-master (Settings → Typography).
+   Payload's `code` field (Components/CodeSnippets html/css/js) is Monaco
+   under the hood — its wrapper is `.code-editor`, Monaco's own root is
+   `.monaco-editor` (kept as its own top-level selector too, not just nested
+   under .code-editor, because Monaco portals overlays like its autocomplete
+   and hover widgets straight onto <body>, outside .code-editor's subtree).
+   This has to win over buildFontMasterCss's `span`/`textarea` !important
+   rule (admin-wide when Settings → "Also apply to the admin dashboard" is
+   on) — a class selector like `.code-editor *` already outranks a bare type
+   selector like `span` on specificity even before !important is considered,
+   so no :not() needs adding to that shared rule; new exclusions like this
+   one are handled locally, at their own point of use, instead of growing an
+   ever-longer :not() list on the one shared selector every collaborator has
+   to touch. Monaco also computes glyph-width metrics against whatever font
+   it's told to use — a CSS-only font swap without this would misalign text,
+   not just look wrong. */
+.code-editor,
+.code-editor *,
+.monaco-editor,
+.monaco-editor * {
+  font-family:
+    "Fira Code",
+    "JetBrains Mono",
+    Consolas,
+    Monaco,
+    "Andale Mono",
+    "Ubuntu Mono",
+    "Courier New",
+    monospace !important;
+  font-variant-ligatures: normal;
+  tab-size: 2;
+  letter-spacing: 0;
+}
+
 /* Aska admin theme — modular design tokens bridged from Settings → Admin
    Theme via the --admin-* custom properties (see layout.tsx, which injects
    the live per-theme values scoped by :root[data-theme]; the var()

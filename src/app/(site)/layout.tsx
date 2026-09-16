@@ -2,7 +2,8 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { getStyleTokensCss } from "@/lib/styles/repo";
-import { getBrandingAssets } from "@/lib/settings/repo";
+import { getBrandingAssets, getTypographySettings } from "@/lib/settings/repo";
+import { buildTypographyHeadHtml } from "@/lib/settings/typography";
 import { getCodeSnippetsByLocation } from "@/lib/codeSnippets/repo";
 
 const geistSans = Geist({
@@ -26,10 +27,12 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function RootLayout({ children }: LayoutProps<"/">) {
-  const [tokensCss, snippets] = await Promise.all([
+  const [tokensCss, snippets, typography] = await Promise.all([
     getStyleTokensCss(),
     getCodeSnippetsByLocation(),
+    getTypographySettings(),
   ]);
+  const typographyHeadHtml = buildTypographyHeadHtml(typography);
 
   // <head> can only take `children` OR `dangerouslySetInnerHTML`, never both —
   // and a Code Snippet's `code` already carries its own tags (<script>,
@@ -43,6 +46,10 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
   // from generateMetadata below) — those are inserted by React's hoistable
   // head mechanism independently of this element's own children/props.
   const headHtml = [
+    // Font link/@font-face goes first — resource hints and stylesheet
+    // links are only effective at reducing CLS/FOIT if the browser sees
+    // them as early as possible.
+    typographyHeadHtml,
     snippets.after_head_open,
     tokensCss ? `<style id="aska-style-tokens">${tokensCss}</style>` : "",
     snippets.before_head_end,

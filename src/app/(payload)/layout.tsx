@@ -6,7 +6,8 @@ import "@payloadcms/next/css";
 import "./custom.scss";
 
 import { importMap } from "./admin/importMap";
-import { getAdminThemeCss } from "@/lib/settings/repo";
+import { getAdminThemeCss, getTypographySettings } from "@/lib/settings/repo";
+import { buildAdminTypographyCss } from "@/lib/settings/typography";
 
 const serverFunction: ServerFunctionClient = async function (args) {
   "use server";
@@ -14,9 +15,17 @@ const serverFunction: ServerFunctionClient = async function (args) {
 };
 
 const Layout = async ({ children }: { children: React.ReactNode }) => {
-  const adminThemeCss = await getAdminThemeCss();
+  const [adminThemeCss, typography] = await Promise.all([
+    getAdminThemeCss(),
+    getTypographySettings(),
+  ]);
+  // Separate <style> tag: @import (used for the Google Fonts case) is only
+  // valid as the first rule of its own stylesheet, so it can't share a tag
+  // with adminThemeCss's :root rules.
+  const adminTypographyCss = buildAdminTypographyCss(typography);
   return (
     <RootLayout config={config} importMap={importMap} serverFunction={serverFunction}>
+      <style id="aska-admin-typography" dangerouslySetInnerHTML={{ __html: adminTypographyCss }} />
       <style id="aska-admin-theme-vars" dangerouslySetInnerHTML={{ __html: adminThemeCss }} />
       {children}
     </RootLayout>

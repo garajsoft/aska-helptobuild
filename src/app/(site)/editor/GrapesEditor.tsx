@@ -198,7 +198,11 @@ export function GrapesEditor({ target, initial, fields = EMPTY_FIELDS }: Props) 
             keepEmptyTextNodes: true,
           },
         },
-        canvas: { styles: ["/api/styles/tokens.css"] },
+        // Same live-Settings CSS the real site's <head> gets (design tokens,
+        // master font) — reads fresh from Settings on every canvas load, so
+        // a font change in Settings shows up here the next time the editor
+        // (re)opens, same as it already does for tokens.css.
+        canvas: { styles: ["/api/styles/tokens.css", "/api/styles/typography.css"] },
       });
 
       // Add built-in placeholders (title, slug) always available.
@@ -388,6 +392,26 @@ export function GrapesEditor({ target, initial, fields = EMPTY_FIELDS }: Props) 
           width: 32px !important;
           height: 32px !important;
           fill: currentColor !important;
+        }
+
+        /* GrapesJS's own export/view-code modal bundles CodeMirror — it
+           must not inherit --font-master from this route's (site)/layout.tsx
+           typography injection. Class selector beats that rule's bare
+           \`span\`/\`textarea\` selectors on specificity regardless. */
+        .CodeMirror,
+        .CodeMirror * {
+          font-family:
+            "Fira Code",
+            "JetBrains Mono",
+            Consolas,
+            Monaco,
+            "Andale Mono",
+            "Ubuntu Mono",
+            "Courier New",
+            monospace !important;
+          font-variant-ligatures: normal;
+          tab-size: 2;
+          letter-spacing: 0;
         }
       `}</style>
       <div ref={containerRef} className="flex-1 overflow-hidden" />
