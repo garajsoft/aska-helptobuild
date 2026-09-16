@@ -21,11 +21,19 @@ const VIEWPORT_LABELS: Record<Viewport, string> = {
 const SPLIT_WIDTH = "clamp(280px, 45vw, 720px)";
 
 function buildSrcDoc(html: string, css: string, js: string) {
+  // This iframe is a fully self-contained `srcDoc` document, not a route —
+  // there's no Next.js "preview page" to fetch typography settings into.
+  // /api/styles/typography.css (same endpoint the GrapesJS canvas already
+  // uses) resolves fine as a relative URL here: a srcDoc document without
+  // its own <base> resolves relative URLs against the embedding admin
+  // page's origin. It's placed after the component's own <style> so that on
+  // an exact selector+!important tie, this still wins the cascade.
   return `<!doctype html>
 <html>
   <head>
     <meta charset="utf-8" />
     <style>${css}</style>
+    <link rel="stylesheet" href="/api/styles/typography.css" />
   </head>
   <body>
     ${html}

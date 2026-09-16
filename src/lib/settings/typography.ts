@@ -75,21 +75,41 @@ export function buildFontFaceCss(library: FontLibraryEntry[]): string {
     .join("\n");
 }
 
-/** Element-type selectors this forces the master font onto — every text
- * and form-control tag, not just body. Plain inheritance from `body` isn't
- * enough: any element with its OWN font-family (an inline style, a
- * component's scoped <style> block, a Tailwind utility class) wins over an
- * inherited value regardless of specificity, so this has to name those
- * elements directly. `!important` is what then lets it still win against a
- * component's own non-!important rule. */
+/** Used two ways below: appended after var(--font-master) as its own
+ * font-family fallback, and as --font-master's OWN value when no font is
+ * configured yet. That second case is the actual root cause of "buttons/
+ * inputs render in a browser fallback font": form controls don't inherit
+ * font-family from an ancestor by UA default in most browsers — they need
+ * a rule that targets them directly. Previously buildFontMasterCss emitted
+ * nothing at all when fontFamilyName was empty, so with no font configured
+ * yet there was no directly-targeting rule for them to pick up. */
+const SYSTEM_FALLBACK_STACK = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+
+/** Element-type selectors reinforced with a second, slightly-more-specific
+ * `!important` pass (tier 2 below) — every text and form-control tag, not
+ * just body. Plain inheritance from `body` isn't enough on its own: any
+ * element with its OWN font-family (an inline style, a component's scoped
+ * <style> block, a Tailwind utility class) wins over an inherited value
+ * regardless of specificity, so this has to name those elements directly. */
 const FONT_MASTER_SELECTOR =
-  "body, p, span, a, h1, h2, h3, h4, h5, h6, input, textarea, select, button, label";
+  "p, span, a, h1, h2, h3, h4, h5, h6, input, textarea, select, button, label";
 
 export function buildFontMasterCss(fontFamilyName: string): string {
-  if (!fontFamilyName) return "";
+  const master = fontFamilyName || SYSTEM_FALLBACK_STACK;
   return (
-    `:root {\n  --font-master: ${fontFamilyName};\n}\n` +
-    `${FONT_MASTER_SELECTOR} {\n  font-family: var(--font-master), sans-serif !important;\n}\n`
+    `:root {\n  --font-master: ${master};\n}\n` +
+    // Tier 1: the universal selector, so nothing — not just the elements
+    // named below, any element at all — falls through to a UA/browser
+    // default. `*` has the lowest possible specificity, which is fine: it's
+    // establishing the baseline, not fighting anything yet.
+    `html, body, *, *::before, *::after {\n` +
+    `  font-family: var(--font-master), ${SYSTEM_FALLBACK_STACK} !important;\n}\n` +
+    // Tier 2: a second !important pass on the specific tags most likely to
+    // carry their own competing font-family (component markup, third-party
+    // snippets). A bare type-selector list still beats `*` on specificity,
+    // so this reliably wins over anything tier 1 didn't, without needing to
+    // restate the value — inherit resolves to what tier 1 already set.
+    `${FONT_MASTER_SELECTOR} {\n  font-family: inherit !important;\n}\n`
   );
 }
 
@@ -207,9 +227,22 @@ if (import.meta.url === `file://${process.argv[1]}`) {
     !cu.includes("font-display: swap") ||
     !cu.includes("--font-master: 'Playfair Display', serif") || // active entry, not the first
     !cu.includes("h1, h2, h3, h4, h5, h6") ||
-    !cu.includes("font-family: var(--font-master), sans-serif !important")
+    !cu.includes("html, body, *, *::before, *::after") ||
+    !cu.includes("font-family: inherit !important")
   ) {
     console.error("FAIL custom_upload (all @font-face, active entry drives --font-master)", cu);
+    process.exit(1);
+  }
+
+  const unconfigured = buildFontMasterCss("");
+  if (
+    !unconfigured.includes(`--font-master: ${SYSTEM_FALLBACK_STACK}`) ||
+    !unconfigured.includes("html, body, *, *::before, *::after")
+  ) {
+    console.error(
+      "FAIL an unconfigured font must still force a system stack, not emit nothing",
+      unconfigured
+    );
     process.exit(1);
   }
 
