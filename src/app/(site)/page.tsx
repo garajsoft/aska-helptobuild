@@ -1,8 +1,35 @@
 import Link from "next/link";
+import type { Metadata } from "next";
 import { readPage, listPages } from "@/lib/pages/repo";
 import { getHomepageSlug } from "@/lib/settings/repo";
 
 export const dynamic = "force-dynamic";
+
+export async function generateMetadata(): Promise<Metadata> {
+  const slug = await getHomepageSlug();
+  const page = slug ? await readPage(slug, { publishedOnly: true }) : null;
+  if (!page) return {};
+
+  const description = page.metaDescription || undefined;
+  const images = page.shareImageUrl ? [page.shareImageUrl] : undefined;
+
+  return {
+    title: page.title,
+    description,
+    openGraph: {
+      title: page.title,
+      description,
+      images,
+      type: "website",
+    },
+    twitter: {
+      card: images ? "summary_large_image" : "summary",
+      title: page.title,
+      description,
+      images,
+    },
+  };
+}
 
 export default async function Home() {
   const slug = await getHomepageSlug();

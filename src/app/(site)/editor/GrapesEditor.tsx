@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import type { Editor } from "grapesjs";
 import "grapesjs/dist/css/grapes.min.css";
+import { formatGrapesCss } from "@/lib/editor/formatCss";
 import {
   COMPONENT_CATEGORY_CUSTOM_VALUE,
   COMPONENT_CATEGORY_OPTIONS,
@@ -296,7 +297,7 @@ export function GrapesEditor({ target, initial, fields = EMPTY_FIELDS }: Props) 
       // cached/initial value), and keep component-generated IDs so inline
       // CSS/JS in custom blocks that target them by #id still matches.
       const html = editorRef.current.getHtml({ cleanId: false }) ?? "";
-      const css = editorRef.current.getCss() ?? "";
+      const css = formatGrapesCss(editorRef.current.getCss() ?? "");
       const res = await fetch(buildSaveUrl(target), {
         method: "PUT",
         headers: { "Content-Type": "application/json" },

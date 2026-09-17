@@ -32,6 +32,46 @@
   letter-spacing: 0;
 }
 
+/* Monaco's own gutter/folding glyphs (.codicon-folding-expanded etc.) render
+   from its bundled "codicon" icon font (embedded as a data: URI @font-face —
+   nothing to load from a CDN), via `content` on the class's own ::before
+   pseudo-element (see monaco-editor's codicon.css + its per-icon rules
+   injected at runtime by iconsStyleSheet.ts). Two different global
+   `!important` rules were clobbering that font-family:
+     1. The `.monaco-editor *` rule directly above, on the .codicon element
+        itself.
+     2. Settings → Typography's buildFontMasterCss(), which (when "Also
+        apply to the admin dashboard" is on) emits a `*, *::before, *::after
+        { font-family: ... !important }` rule admin-wide. A pseudo-element's
+        font-family is normally *inherited* from its host element, but an
+        explicit declared value — even from the lowest-specificity `*`
+        selector — always wins over an inherited one, so that rule reaches
+        the ::before glyph regardless of how specific `.codicon`'s own rule
+        is. Explicitly re-targeting `::before`/`::after` here (higher
+        specificity than a bare `*::before`) is what actually wins.
+   Scoped to .code-editor/.monaco-editor only — does not touch
+   buildFontMasterCss, --font-master, or any global CSS file. */
+.code-editor .codicon,
+.code-editor [class^="codicon-"],
+.code-editor [class*=" codicon-"],
+.code-editor .codicon::before,
+.code-editor [class^="codicon-"]::before,
+.code-editor [class*=" codicon-"]::before,
+.code-editor .codicon::after,
+.code-editor [class^="codicon-"]::after,
+.code-editor [class*=" codicon-"]::after,
+.monaco-editor .codicon,
+.monaco-editor [class^="codicon-"],
+.monaco-editor [class*=" codicon-"],
+.monaco-editor .codicon::before,
+.monaco-editor [class^="codicon-"]::before,
+.monaco-editor [class*=" codicon-"]::before,
+.monaco-editor .codicon::after,
+.monaco-editor [class^="codicon-"]::after,
+.monaco-editor [class*=" codicon-"]::after {
+  font-family: "codicon" !important;
+}
+
 /* Aska admin theme — modular design tokens bridged from Settings → Admin
    Theme via the --admin-* custom properties (see layout.tsx, which injects
    the live per-theme values scoped by :root[data-theme]; the var()
