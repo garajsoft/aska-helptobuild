@@ -20,6 +20,7 @@ import { Forms } from "./collections/Forms";
 import { FormSubmissions } from "./collections/FormSubmissions";
 import { CodeSnippets } from "./collections/CodeSnippets";
 import { Settings } from "./globals/Settings";
+import { ThemeBuilder } from "./globals/ThemeBuilder";
 import { isSignedIn } from "./lib/auth/isSignedIn";
 import { withImportExportUI } from "./lib/importExport/withImportExportUI";
 
@@ -58,7 +59,7 @@ export default buildConfig({
     Users,
     Media,
   ],
-  globals: [Settings],
+  globals: [Settings, ThemeBuilder],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || "",
   typescript: { outputFile: path.resolve(dirname, "payload-types.ts") },

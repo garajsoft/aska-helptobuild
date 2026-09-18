@@ -45,7 +45,8 @@ function componentBlockContent(c: ComponentDoc): string {
 
 export type EditorTarget =
   | { mode: "page"; slug: string; title: string }
-  | { mode: "template"; id: string | number; name: string; postTypeSlug: string | null };
+  | { mode: "template"; id: string | number; name: string; postTypeSlug: string | null }
+  | { mode: "theme"; scope: string; slot: "header" | "footer"; label: string };
 
 export interface FieldMeta {
   name: string;
@@ -70,7 +71,9 @@ const EMPTY_FIELDS: FieldMeta[] = [];
 /** Primitive identity for the init effect: same page/template = same string,
  * regardless of how the caller re-creates the `target` object each render. */
 function targetKey(t: EditorTarget): string {
-  return t.mode === "page" ? `page:${t.slug}` : `template:${t.id}`;
+  if (t.mode === "page") return `page:${t.slug}`;
+  if (t.mode === "template") return `template:${t.id}`;
+  return `theme:${t.scope}:${t.slot}`;
 }
 
 /**
@@ -97,15 +100,13 @@ function contentForField(f: FieldMeta): string {
 }
 
 function buildSaveUrl(t: EditorTarget) {
-  return t.mode === "page"
-    ? `/api/editor/pages/${encodeURIComponent(t.slug)}`
-    : `/api/editor/templates/${encodeURIComponent(String(t.id))}`;
+  if (t.mode === "page") return `/api/editor/pages/${encodeURIComponent(t.slug)}`;
+  if (t.mode === "template") return `/api/editor/templates/${encodeURIComponent(String(t.id))}`;
+  return `/api/editor/theme/${encodeURIComponent(t.scope)}/${t.slot}`;
 }
 
 function buildSaveBody(t: EditorTarget, html: string, css: string) {
-  return t.mode === "page"
-    ? { title: t.title, html, css }
-    : { html, css };
+  return t.mode === "page" ? { title: t.title, html, css } : { html, css };
 }
 
 function viewHref(t: EditorTarget): string | null {
@@ -114,7 +115,9 @@ function viewHref(t: EditorTarget): string | null {
 }
 
 function label(t: EditorTarget): string {
-  return t.mode === "page" ? `/${t.slug}` : `${t.name} (template)`;
+  if (t.mode === "page") return `/${t.slug}`;
+  if (t.mode === "template") return `${t.name} (template)`;
+  return t.label;
 }
 
 function saveButtonClasses(state: SaveState): string {
@@ -179,9 +182,9 @@ export function GrapesEditor({ target, initial, fields = EMPTY_FIELDS }: Props) 
         fromElement: false,
         components:
           initial.html ||
-          `<section style="padding:64px 24px;text-align:center;font-family:sans-serif"><h1>${
-            target.mode === "page" ? target.title : target.name
-          }</h1></section>`,
+          `<section style="padding:64px 24px;text-align:center;font-family:sans-serif"><h1>${label(
+            target
+          )}</h1></section>`,
         style: initial.css || "",
         plugins: [presetWebpage, blocksBasic, forms],
         pluginsOpts: { "grapesjs-blocks-basic": { flexGrid: true } },

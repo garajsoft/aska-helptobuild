@@ -1,10 +1,35 @@
 import type { Metadata } from "next";
+import { headers } from "next/headers";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { getStyleTokensCss } from "@/lib/styles/repo";
-import { getBrandingAssets, getTypographySettings } from "@/lib/settings/repo";
+import { getBrandingAssets, getTypographySettings, getHomepageSlug } from "@/lib/settings/repo";
 import { buildTypographyHeadHtml } from "@/lib/settings/typography";
 import { getCodeSnippetsByLocation } from "@/lib/codeSnippets/repo";
+import { getThemeLayout } from "@/lib/theme-builder/getThemeLayout";
+import { ThemeSlot } from "@/components/theme/ThemeSlot";
+
+async function getPathname(): Promise<string> {
+  const h = await headers();
+  return h.get("x-aska-pathname") ?? "/";
+}
+
+/** /editor and /editor/* are the standalone GrapesJS canvas (page/template/theme
+ * editing) — it owns the full viewport itself, so the site's own header/footer
+ * must never wrap it (that's also where a CUSTOM_BUILD header/footer's own
+ * markup gets edited — rendering the *current* global header there too would
+ * double it up around the canvas). */
+function isEditorRoute(pathname: string): boolean {
+  return pathname === "/editor" || pathname.startsWith("/editor/");
+}
+
+/** The page slug getThemeLayout()'s rules are matched against — see proxy.ts,
+ * which stamps the raw pathname since a layout has no route params of its
+ * own. "/" has no slug in the URL, so it resolves to Settings.homepage. */
+async function resolveThemeSlug(pathname: string): Promise<string> {
+  if (pathname === "/") return (await getHomepageSlug()) ?? "";
+  return pathname.replace(/^\/+/, "");
+}
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -27,10 +52,14 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function RootLayout({ children }: LayoutProps<"/">) {
-  const [tokensCss, snippets, typography] = await Promise.all([
+  const pathname = await getPathname();
+  const editorRoute = isEditorRoute(pathname);
+
+  const [tokensCss, snippets, typography, theme] = await Promise.all([
     getStyleTokensCss(),
     getCodeSnippetsByLocation(),
     getTypographySettings(),
+    editorRoute ? null : resolveThemeSlug(pathname).then(getThemeLayout),
   ]);
   const typographyHeadHtml = buildTypographyHeadHtml(typography);
 
@@ -74,7 +103,9 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
             dangerouslySetInnerHTML={{ __html: snippets.after_body_open }}
           />
         )}
+        {theme && <ThemeSlot kind="header" resolved={theme.header} />}
         {children}
+        {theme && <ThemeSlot kind="footer" resolved={theme.footer} />}
         {snippets.before_body_end && (
           <div
             style={{ display: "contents" }}

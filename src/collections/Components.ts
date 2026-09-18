@@ -1,6 +1,7 @@
 import type { CollectionConfig } from "payload";
 import { isContentManager } from "@/lib/auth/roles";
 import { withImportExportUI } from "@/lib/importExport/withImportExportUI";
+import { CODE_FIELD_ADMIN } from "@/lib/adminFields/codeEditor";
 
 /**
  * Fixed category list for the GrapesJS block manager grouping. "custom"
@@ -76,10 +77,10 @@ export const Components: CollectionConfig = withImportExportUI({
     {
       name: "html",
       type: "code",
-      admin: { language: "html", description: "Component markup." },
+      admin: { language: "html", description: "Component markup.", ...CODE_FIELD_ADMIN },
     },
-    { name: "css", type: "code", admin: { language: "css" } },
-    { name: "js", type: "code", admin: { language: "javascript" } },
+    { name: "css", type: "code", admin: { language: "css", ...CODE_FIELD_ADMIN } },
+    { name: "js", type: "code", admin: { language: "javascript", ...CODE_FIELD_ADMIN } },
     {
       type: "ui",
       name: "componentPreview",

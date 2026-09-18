@@ -33,6 +33,7 @@ import { VariantOptionsSelector as VariantOptionsSelector_b91672ccd6e8b071c11142
 import { PriceCell as PriceCell_e27bf7b8cc50640dcdd584767b8eac3c } from '@payloadcms/plugin-ecommerce/client'
 import { PriceInput as PriceInput_b91672ccd6e8b071c11142ab941fedfb } from '@payloadcms/plugin-ecommerce/rsc'
 import { ActiveCustomFontSelect as ActiveCustomFontSelect_7055b61cd7b07570f5f8e40a62fc2a35 } from '@/components/admin/ActiveCustomFontSelect'
+import { ThemeSlotPreview as ThemeSlotPreview_67eb3395219760f32c20faf41ab6a433 } from '@/components/admin/ThemeSlotPreview'
 import { AskaNav as AskaNav_a9d4b87e0306b3ddfe97926a52a69591 } from '@/components/admin/Nav'
 import { Icon as Icon_a44df17d0fc3dcd873dae43dc3bf66bd } from '@/components/admin/Logo'
 import { Logo as Logo_a44df17d0fc3dcd873dae43dc3bf66bd } from '@/components/admin/Logo'
@@ -77,6 +78,7 @@ export const importMap = {
   "@payloadcms/plugin-ecommerce/client#PriceCell": PriceCell_e27bf7b8cc50640dcdd584767b8eac3c,
   "@payloadcms/plugin-ecommerce/rsc#PriceInput": PriceInput_b91672ccd6e8b071c11142ab941fedfb,
   "@/components/admin/ActiveCustomFontSelect#ActiveCustomFontSelect": ActiveCustomFontSelect_7055b61cd7b07570f5f8e40a62fc2a35,
+  "@/components/admin/ThemeSlotPreview#ThemeSlotPreview": ThemeSlotPreview_67eb3395219760f32c20faf41ab6a433,
   "@/components/admin/Nav#AskaNav": AskaNav_a9d4b87e0306b3ddfe97926a52a69591,
   "@/components/admin/Logo#Icon": Icon_a44df17d0fc3dcd873dae43dc3bf66bd,
   "@/components/admin/Logo#Logo": Logo_a44df17d0fc3dcd873dae43dc3bf66bd,

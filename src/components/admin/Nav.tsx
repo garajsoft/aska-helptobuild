@@ -39,6 +39,7 @@ const ENTRIES: Entry[] = [
     label: "Code Snippets",
     countSlug: "code-snippets",
   },
+  { href: "/admin/globals/theme-builder", label: "Theme Builder", isGlobal: true },
   { href: "/admin/globals/settings", label: "Settings", isGlobal: true },
 ];
 

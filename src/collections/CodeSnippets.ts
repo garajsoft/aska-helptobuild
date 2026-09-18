@@ -1,6 +1,7 @@
 import type { CollectionConfig } from "payload";
 import { isContentManager } from "@/lib/auth/roles";
 import { withImportExportUI } from "@/lib/importExport/withImportExportUI";
+import { CODE_FIELD_ADMIN } from "@/lib/adminFields/codeEditor";
 
 export const CODE_SNIPPET_LOCATIONS = [
   { label: "After <head> open", value: "after_head_open" },
@@ -70,6 +71,7 @@ export const CodeSnippets: CollectionConfig = withImportExportUI({
       admin: {
         language: "html",
         description: "Complete snippet, tags included — pasted exactly as the vendor gives it to you.",
+        ...CODE_FIELD_ADMIN,
       },
     },
     {
