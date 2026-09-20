@@ -72,12 +72,16 @@ export default buildConfig({
   typescript: { outputFile: path.resolve(dirname, "payload-types.ts") },
   db: postgresAdapter({
     pool: { connectionString: process.env.DATABASE_URI || "" },
-    // push (dev-only schema sync) must stay off in production: it diffs the
-    // live DB against this config and non-interactively resolves ambiguous
-    // changes as drop-and-recreate, deleting data in any column/table it
-    // decides no longer matches. Real schema changes go through
+    // TEMPORARY: forced on for one deploy to sync the new page-views table
+    // and Settings.conversions fields (both purely additive - no renames or
+    // type changes for push to misinterpret as drop-and-recreate). Revert to
+    // `process.env.NODE_ENV !== "production"` immediately after this lands -
+    // see the comment history on this line for why it must stay off
+    // otherwise: push non-interactively resolves ambiguous changes as
+    // drop-and-recreate, deleting data in any column/table it decides no
+    // longer matches. Real schema changes should go through
     // `payload migrate:create` + `payload migrate` instead.
-    push: process.env.NODE_ENV !== "production",
+    push: true,
   }),
   sharp,
   onInit: async (payload) => {
