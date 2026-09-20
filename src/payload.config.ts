@@ -64,39 +64,15 @@ export default buildConfig({
   typescript: { outputFile: path.resolve(dirname, "payload-types.ts") },
   db: postgresAdapter({
     pool: { connectionString: process.env.DATABASE_URI || "" },
-    push: true,
+    // push (dev-only schema sync) must stay off in production: it diffs the
+    // live DB against this config and non-interactively resolves ambiguous
+    // changes as drop-and-recreate, deleting data in any column/table it
+    // decides no longer matches. Real schema changes go through
+    // `payload migrate:create` + `payload migrate` instead.
+    push: process.env.NODE_ENV !== "production",
   }),
   sharp,
   onInit: async (payload) => {
-    if (process.env.NODE_ENV === "production") {
-      try {
-        // One-time cleanup: reset the public schema so drizzle push doesn't
-        // hit interactive rename prompts (no TTY in the container = boot
-        // hangs forever). Guarded by RESET_SCHEMA_ON_BOOT=1 env — set it,
-        // deploy, watch it boot clean, then unset it.
-        // ponytail: destroys ALL data; only run on empty/dev environments.
-        if (process.env.RESET_SCHEMA_ON_BOOT === "1") {
-          const drizzle = (
-            payload.db as { drizzle?: { execute: (q: unknown) => Promise<unknown> } }
-          ).drizzle;
-          if (drizzle) {
-            const { sql } = await import("drizzle-orm");
-            payload.logger.warn("RESET_SCHEMA_ON_BOOT=1 — dropping public schema");
-            await drizzle.execute(
-              sql.raw("DROP SCHEMA IF EXISTS public CASCADE; CREATE SCHEMA public;")
-            );
-          }
-        }
-
-        const { pushDevSchema } = await import("@payloadcms/drizzle");
-        // @ts-expect-error payload.db is the drizzle adapter; type not re-exported
-        await pushDevSchema(payload.db);
-        payload.logger.info("Payload schema pushed to Postgres");
-      } catch (err) {
-        payload.logger.error({ err }, "Schema push failed");
-      }
-    }
-
     // Safety net so an RBAC rollout can never lock everyone out of /admin —
     // runs on every boot (dev included); cheap no-op once an admin-capable
     // user already exists.
