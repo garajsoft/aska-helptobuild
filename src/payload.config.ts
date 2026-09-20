@@ -34,6 +34,7 @@ export default buildConfig({
     meta: {
       title: "åska CMS",
       titleSuffix: " · åska",
+      icons: [{ rel: "icon", type: "image/svg+xml", url: "/aska-favicon.svg" }],
     },
     components: {
       Nav: "@/components/admin/Nav#AskaNav",
