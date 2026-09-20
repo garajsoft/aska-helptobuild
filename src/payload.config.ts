@@ -44,10 +44,6 @@ export default buildConfig({
       beforeDashboard: [
         "@/components/admin/dashboard/AskaDashboard#AskaDashboard",
       ],
-      // `header` renders globally on every admin route (beforeDashboard only
-      // renders on the dashboard itself) - RichTextStyles needs to be mounted
-      // wherever a richText field might appear, e.g. Blog's edit view.
-      header: ["@/components/admin/RichTextStyles#RichTextStyles"],
     },
   },
   collections: [
