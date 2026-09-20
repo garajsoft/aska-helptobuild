@@ -5,7 +5,7 @@ import { getCurrentUser } from "@/lib/auth/requireUser";
 import { getPayload } from "payload";
 import config from "@/payload.config";
 
-export const metadata = { title: "Template editor — åska CMS" };
+export const metadata = { title: "Template editor — aska CMS" };
 export const dynamic = "force-dynamic";
 
 interface Props {

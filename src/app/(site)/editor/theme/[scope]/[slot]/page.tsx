@@ -3,7 +3,7 @@ import { GrapesEditor } from "../../../GrapesEditor";
 import { readThemeSlot } from "@/lib/theme-builder/repo";
 import { getCurrentUser } from "@/lib/auth/requireUser";
 
-export const metadata = { title: "Theme editor — åska CMS" };
+export const metadata = { title: "Theme editor — aska CMS" };
 export const dynamic = "force-dynamic";
 
 interface Props {

@@ -49,7 +49,7 @@ export default async function Home() {
   return (
     <div className="mx-auto flex min-h-screen max-w-2xl flex-col gap-8 p-8 font-sans">
       <header className="flex flex-col gap-2">
-        <span className="text-xs uppercase tracking-widest text-zinc-500">åska CMS</span>
+        <span className="text-xs uppercase tracking-widest text-zinc-500">aska CMS</span>
         <h1 className="text-3xl font-semibold tracking-tight">Pages</h1>
         <p className="text-sm text-zinc-600">
           No homepage set in Settings. Pick one under <code>/admin/globals/settings</code>.

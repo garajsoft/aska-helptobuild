@@ -31,18 +31,24 @@ export default buildConfig({
     user: Users.slug,
     importMap: { baseDir: path.resolve(dirname) },
     meta: {
-      title: "åska CMS",
-      titleSuffix: " · åska",
+      title: "aska CMS",
+      titleSuffix: " · aska",
       icons: [{ rel: "icon", type: "image/svg+xml", url: "/aska-favicon.svg" }],
     },
     components: {
       Nav: "@/components/admin/Nav#AskaNav",
       graphics: {
         Logo: "@/components/admin/Logo#Logo",
+        Icon: "@/components/admin/Logo#Icon",
       },
       beforeDashboard: [
         "@/components/admin/dashboard/AskaDashboard#AskaDashboard",
       ],
+      views: {
+        account: {
+          Component: "@/components/admin/AccountView#AccountView",
+        },
+      },
     },
   },
   collections: [

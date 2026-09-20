@@ -15,7 +15,7 @@ export async function Header() {
           // eslint-disable-next-line @next/next/no-img-element
           <img src={logoLight.url} alt={logoLight.alt ?? "Logo"} className="h-8 w-auto" />
         ) : (
-          "åska"
+          "aska"
         )}
       </Link>
     </header>

@@ -6,7 +6,7 @@
 export function Footer() {
   return (
     <footer className="border-t border-black/10 px-6 py-6 text-sm text-zinc-500">
-      © {new Date().getFullYear()} åska. All rights reserved.
+      © {new Date().getFullYear()} aska. All rights reserved.
     </footer>
   );
 }
