@@ -43,15 +43,43 @@ async function loadFormStats(): Promise<{ submissions: number; forms: number } |
   }
 }
 
+const TRAFFIC_DAYS = 28;
+
+// One page-views count per day for the last TRAFFIC_DAYS days, oldest first.
+async function loadTrafficSeries(): Promise<number[] | null> {
+  try {
+    const payload = await getPayload({ config });
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    return await Promise.all(
+      Array.from({ length: TRAFFIC_DAYS }, async (_, i) => {
+        const dayStart = new Date(today);
+        dayStart.setDate(dayStart.getDate() - (TRAFFIC_DAYS - 1 - i));
+        const dayEnd = new Date(dayStart);
+        dayEnd.setDate(dayEnd.getDate() + 1);
+        const { totalDocs } = await payload.count({
+          collection: "page-views",
+          where: {
+            createdAt: {
+              greater_than_equal: dayStart.toISOString(),
+              less_than: dayEnd.toISOString(),
+            },
+          },
+        });
+        return totalDocs;
+      })
+    );
+  } catch {
+    return null;
+  }
+}
+
 // A tiny hand-rolled sparkline. Original SVG, no library, no branded palette.
-function TrafficChart() {
-  const points = [
-    12, 18, 15, 22, 26, 24, 30, 28, 34, 41, 38, 45, 52, 48, 55, 60, 58, 66, 72, 70, 78, 84, 80, 88, 96, 92, 101, 108,
-  ];
+function TrafficChart({ points }: { points: number[] }) {
   const w = 640;
   const h = 180;
   const pad = 28;
-  const maxY = Math.max(...points) * 1.15;
+  const maxY = Math.max(...points, 1) * 1.15;
   const dx = (w - pad * 2) / (points.length - 1);
   const y = (v: number) => h - pad - (v / maxY) * (h - pad * 2);
   const d = points
@@ -107,7 +135,10 @@ function Widget({
 
 export const AskaDashboard = async () => {
   const enabled = await loadEnabledWidgets();
-  const formStats = enabled.has("form_submissions") ? await loadFormStats() : null;
+  const [formStats, trafficSeries] = await Promise.all([
+    enabled.has("form_submissions") ? loadFormStats() : null,
+    enabled.has("site_traffic") ? loadTrafficSeries() : null,
+  ]);
 
   return (
     <section className="aska-dashboard">
@@ -123,8 +154,12 @@ export const AskaDashboard = async () => {
 
       <div className="aska-dashboard__grid">
         {enabled.has("site_traffic") && (
-          <Widget title="Site traffic" hint="last 28 days (demo data)">
-            <TrafficChart />
+          <Widget
+            title="Site traffic"
+            value={trafficSeries ? trafficSeries.reduce((a, b) => a + b, 0) : "—"}
+            hint={trafficSeries ? `page views, last ${TRAFFIC_DAYS} days` : "unavailable"}
+          >
+            <TrafficChart points={trafficSeries ?? Array(TRAFFIC_DAYS).fill(0)} />
           </Widget>
         )}
         {enabled.has("form_submissions") && (
