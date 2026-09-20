@@ -18,7 +18,6 @@ import { HouseDesigns } from "./collections/HouseDesigns";
 import { Forms } from "./collections/Forms";
 import { FormSubmissions } from "./collections/FormSubmissions";
 import { CodeSnippets } from "./collections/CodeSnippets";
-import { PageViews } from "./collections/PageViews";
 import { Settings } from "./globals/Settings";
 import { ThemeBuilder } from "./globals/ThemeBuilder";
 import { isSignedIn } from "./lib/auth/isSignedIn";
@@ -62,7 +61,6 @@ export default buildConfig({
     Forms,
     FormSubmissions,
     CodeSnippets,
-    PageViews,
     Users,
     Media,
   ],
