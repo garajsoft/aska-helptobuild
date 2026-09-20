@@ -13,14 +13,11 @@
     "node": "22.x"
   },
   "dependencies": {
-    "@neon/config": "^1.4.2",
-    "@neon/env": "^1.3.2",
     "@payloadcms/db-postgres": "^3.89.0",
     "@payloadcms/next": "^3.89.0",
     "@payloadcms/plugin-ecommerce": "^3.89.0",
     "@payloadcms/plugin-stripe": "^3.89.0",
     "@payloadcms/richtext-lexical": "^3.89.0",
-    "@payloadcms/storage-vercel-blob": "^3.89.0",
     "drizzle-kit": "0.31.7",
     "drizzle-orm": "0.45.2",
     "grapesjs": "^0.23.6",

@@ -3,7 +3,6 @@ import { fileURLToPath } from "url";
 import { buildConfig } from "payload";
 import { postgresAdapter } from "@payloadcms/db-postgres";
 import { lexicalEditor } from "@payloadcms/richtext-lexical";
-import { vercelBlobStorage } from "@payloadcms/storage-vercel-blob";
 import { ecommercePlugin, USD, EUR, GBP } from "@payloadcms/plugin-ecommerce";
 import { stripeAdapter } from "@payloadcms/plugin-ecommerce/payments/stripe";
 import sharp from "sharp";
@@ -130,10 +129,6 @@ export default buildConfig({
     }
   },
   plugins: [
-    vercelBlobStorage({
-      collections: { media: true },
-      token: process.env.BLOB_READ_WRITE_TOKEN || "",
-    }),
     ecommercePlugin({
       access: {
         adminOnlyFieldAccess: isSignedIn,
