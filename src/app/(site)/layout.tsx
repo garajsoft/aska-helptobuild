@@ -8,6 +8,7 @@ import { buildTypographyHeadHtml } from "@/lib/settings/typography";
 import { getCodeSnippetsByLocation } from "@/lib/codeSnippets/repo";
 import { getThemeLayout } from "@/lib/theme-builder/getThemeLayout";
 import { ThemeSlot } from "@/components/theme/ThemeSlot";
+import { PageViewTracker } from "@/components/site/PageViewTracker";
 
 async function getPathname(): Promise<string> {
   const h = await headers();
@@ -103,6 +104,7 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
             dangerouslySetInnerHTML={{ __html: snippets.after_body_open }}
           />
         )}
+        {!editorRoute && <PageViewTracker />}
         {theme && <ThemeSlot kind="header" resolved={theme.header} />}
         {children}
         {theme && <ThemeSlot kind="footer" resolved={theme.footer} />}
