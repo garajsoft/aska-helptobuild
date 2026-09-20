@@ -1,3 +1,6 @@
+"use client";
+
+import { usePathname } from "next/navigation";
 import { AskaMark } from "./AskaMark";
 
 export const Logo = () => (
@@ -15,7 +18,13 @@ export const Logo = () => (
 
 // The step-nav's home slot (top-left of every admin view) is icon-sized by
 // default - swap in the word itself so it reads as a real "back to
-// dashboard" link instead of an unlabeled glyph.
-export const Icon = () => <span style={{ fontWeight: 600 }}>Dashboard</span>;
+// dashboard" link instead of an unlabeled glyph. On the dashboard itself
+// the page's own header already says "Dashboard", so render nothing there
+// instead of a redundant second copy.
+export const Icon = () => {
+  const pathname = usePathname();
+  if (pathname === "/admin") return null;
+  return <span style={{ fontWeight: 600 }}>Dashboard</span>;
+};
 
 export default Logo;

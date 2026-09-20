@@ -143,6 +143,15 @@ a.btn--style-primary {
   white-space: nowrap;
 }
 
+/* Payload sizes the home slot for an icon (18x18, overflow clipped) - our
+   Icon renders the word "Dashboard" there instead, so let it size to its
+   text. */
+.step-nav__home {
+  width: auto;
+  height: auto;
+  white-space: nowrap;
+}
+
 /* ---------------- Fixed sidebar / independent content scroll ----------------
    Payload's own grid (.template-default: nav column | wrap column) already
    keeps .nav sticky with .nav__scroll independently scrollable — left
