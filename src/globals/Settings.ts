@@ -93,7 +93,7 @@ export const Settings: GlobalConfig = {
                   hasMany: true,
                   defaultValue: ["site_traffic", "form_submissions", "conversions", "comments"],
                   options: [
-                    { label: "Site traffic", value: "site_traffic" },
+                    { label: "Page views", value: "site_traffic" },
                     { label: "Form submissions", value: "form_submissions" },
                     { label: "Conversions", value: "conversions" },
                     { label: "Comments", value: "comments" },

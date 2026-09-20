@@ -119,12 +119,12 @@ export const AskaNav = () => {
       </ul>
 
       {me && (
-        <div className="aska-nav__me">
+        <Link href="/admin/account" className="aska-nav__me">
           <span className="aska-nav__avatar" aria-hidden>
             {(me.email ?? "?").slice(0, 1).toUpperCase()}
           </span>
           <span className="aska-nav__me-text">{me.email}</span>
-        </div>
+        </Link>
       )}
     </nav>
   );

@@ -74,6 +74,31 @@ async function loadTrafficSeries(): Promise<number[] | null> {
   }
 }
 
+// Distinct visitor count over the last TRAFFIC_DAYS days. No ORM-level
+// distinct-count API, so this runs raw SQL against the same drizzle
+// instance the onInit safety net already uses.
+async function loadVisitorsTotal(): Promise<number | null> {
+  try {
+    const payload = await getPayload({ config });
+    const drizzle = (
+      payload.db as { drizzle?: { execute: (q: unknown) => Promise<{ rows: Record<string, unknown>[] }> } }
+    ).drizzle;
+    if (!drizzle) return null;
+    const { sql } = await import("drizzle-orm");
+
+    const windowStart = new Date();
+    windowStart.setHours(0, 0, 0, 0);
+    windowStart.setDate(windowStart.getDate() - (TRAFFIC_DAYS - 1));
+    const result = await drizzle.execute(
+      sql`SELECT COUNT(DISTINCT visitor_id) AS c FROM page_views WHERE created_at >= ${windowStart.toISOString()} AND visitor_id IS NOT NULL`
+    );
+    const c = result.rows?.[0]?.c;
+    return typeof c === "string" ? parseInt(c, 10) : Number(c ?? 0);
+  } catch {
+    return null;
+  }
+}
+
 type ConversionGoal = { label?: string | null; path?: string | null };
 type ConversionsConfig = {
   formSubmissions?: boolean | null;
@@ -135,7 +160,7 @@ function TrafficChart({ points }: { points: number[] }) {
     ` L${(pad + (points.length - 1) * dx).toFixed(1)},${(h - pad).toFixed(1)} Z`;
   const ticks = 4;
   return (
-    <svg viewBox={`0 0 ${w} ${h}`} width="100%" height="180" role="img" aria-label="Site traffic (placeholder)">
+    <svg viewBox={`0 0 ${w} ${h}`} width="100%" height="180" role="img" aria-label="Page views, last 28 days">
       {Array.from({ length: ticks + 1 }, (_, i) => {
         const gy = pad + ((h - pad * 2) * i) / ticks;
         const val = Math.round(maxY - (maxY * i) / ticks);
@@ -179,9 +204,10 @@ function Widget({
 
 export const AskaDashboard = async () => {
   const enabled = await loadEnabledWidgets();
-  const [formStats, trafficSeries, conversions] = await Promise.all([
+  const [formStats, trafficSeries, visitorsTotal, conversions] = await Promise.all([
     enabled.has("form_submissions") ? loadFormStats() : null,
     enabled.has("site_traffic") ? loadTrafficSeries() : null,
+    enabled.has("site_traffic") ? loadVisitorsTotal() : null,
     enabled.has("conversions") ? loadConversions() : null,
   ]);
 
@@ -199,11 +225,19 @@ export const AskaDashboard = async () => {
 
       <div className="aska-dashboard__grid">
         {enabled.has("site_traffic") && (
-          <Widget
-            title="Site traffic"
-            value={trafficSeries ? trafficSeries.reduce((a, b) => a + b, 0) : "—"}
-            hint={trafficSeries ? `page views, last ${TRAFFIC_DAYS} days` : "unavailable"}
-          >
+          <Widget title="Page views" hint={`last ${TRAFFIC_DAYS} days`}>
+            <div className="aska-widget__stats">
+              <div className="aska-widget__stat">
+                <div className="aska-widget__value">
+                  {trafficSeries ? trafficSeries.reduce((a, b) => a + b, 0) : "—"}
+                </div>
+                <div className="aska-widget__stat-label">Page views</div>
+              </div>
+              <div className="aska-widget__stat">
+                <div className="aska-widget__value">{visitorsTotal ?? "—"}</div>
+                <div className="aska-widget__stat-label">Visitors</div>
+              </div>
+            </div>
             <TrafficChart points={trafficSeries ?? Array(TRAFFIC_DAYS).fill(0)} />
           </Widget>
         )}

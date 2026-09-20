@@ -20,5 +20,12 @@ export const PageViews: CollectionConfig = {
       required: true,
       index: true,
     },
+    {
+      name: "visitorId",
+      type: "text",
+      admin: {
+        description: "Anonymous per-browser id (localStorage), used to count unique visitors.",
+      },
+    },
   ],
 };
