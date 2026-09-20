@@ -74,6 +74,50 @@ async function loadTrafficSeries(): Promise<number[] | null> {
   }
 }
 
+type ConversionGoal = { label?: string | null; path?: string | null };
+type ConversionsConfig = {
+  formSubmissions?: boolean | null;
+  sales?: boolean | null;
+  goals?: ConversionGoal[] | null;
+};
+
+async function loadConversions(): Promise<{ total: number; sources: string[] } | null> {
+  try {
+    const payload = await getPayload({ config });
+    const settings = await payload.findGlobal({ slug: "settings", depth: 0 });
+    const conv = (settings as { conversions?: ConversionsConfig }).conversions;
+    if (!conv) return { total: 0, sources: [] };
+
+    let total = 0;
+    const sources: string[] = [];
+
+    if (conv.formSubmissions) {
+      const { totalDocs } = await payload.count({ collection: "form-submissions" });
+      total += totalDocs;
+      sources.push("form submissions");
+    }
+
+    if (conv.sales) {
+      const { totalDocs } = await payload.count({ collection: "orders" });
+      total += totalDocs;
+      sources.push("sales");
+    }
+
+    const goals = (conv.goals ?? []).filter((g): g is Required<ConversionGoal> => Boolean(g.path));
+    if (goals.length > 0) {
+      const goalCounts = await Promise.all(
+        goals.map((g) => payload.count({ collection: "page-views", where: { path: { equals: g.path } } }))
+      );
+      total += goalCounts.reduce((sum, c) => sum + c.totalDocs, 0);
+      sources.push(`${goals.length} custom goal${goals.length === 1 ? "" : "s"}`);
+    }
+
+    return { total, sources };
+  } catch {
+    return null;
+  }
+}
+
 // A tiny hand-rolled sparkline. Original SVG, no library, no branded palette.
 function TrafficChart({ points }: { points: number[] }) {
   const w = 640;
@@ -135,9 +179,10 @@ function Widget({
 
 export const AskaDashboard = async () => {
   const enabled = await loadEnabledWidgets();
-  const [formStats, trafficSeries] = await Promise.all([
+  const [formStats, trafficSeries, conversions] = await Promise.all([
     enabled.has("form_submissions") ? loadFormStats() : null,
     enabled.has("site_traffic") ? loadTrafficSeries() : null,
+    enabled.has("conversions") ? loadConversions() : null,
   ]);
 
   return (
@@ -170,7 +215,17 @@ export const AskaDashboard = async () => {
           />
         )}
         {enabled.has("conversions") && (
-          <Widget title="Conversions" value="—" hint="wire to Stripe / analytics" />
+          <Widget
+            title="Conversions"
+            value={conversions ? conversions.total : "—"}
+            hint={
+              conversions
+                ? conversions.sources.length > 0
+                  ? conversions.sources.join(", ")
+                  : "none enabled — set up in Settings → Conversions"
+                : "unavailable"
+            }
+          />
         )}
         {enabled.has("comments") && (
           <Widget title="Comments" value="—" hint="no comments collection yet" />
