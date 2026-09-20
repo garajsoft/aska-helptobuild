@@ -152,6 +152,16 @@ a.btn--style-primary {
   white-space: nowrap;
 }
 
+/* On /admin itself our Icon renders nothing (the dashboard's own header
+   already says "Dashboard") - but Payload's step-nav always renders a "/"
+   separator right after the home slot regardless, leaving an orphan slash
+   with nothing before it. Hide both the empty home slot and that slash so
+   the dashboard's own "Dashboard" step sits flush left. */
+.step-nav__home:has(span:empty),
+.step-nav__home:has(span:empty) + span {
+  display: none;
+}
+
 /* ---------------- Fixed sidebar / independent content scroll ----------------
    Payload's own grid (.template-default: nav column | wrap column) already
    keeps .nav sticky with .nav__scroll independently scrollable — left
