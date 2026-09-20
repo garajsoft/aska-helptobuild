@@ -119,12 +119,17 @@ export const AskaNav = () => {
       </ul>
 
       {me && (
-        <Link href="/admin/account" className="aska-nav__me">
-          <span className="aska-nav__avatar" aria-hidden>
-            {(me.email ?? "?").slice(0, 1).toUpperCase()}
-          </span>
-          <span className="aska-nav__me-text">{me.email}</span>
-        </Link>
+        <div className="aska-nav__me-row">
+          <Link href="/admin/account" className="aska-nav__me">
+            <span className="aska-nav__avatar" aria-hidden>
+              {(me.email ?? "?").slice(0, 1).toUpperCase()}
+            </span>
+            <span className="aska-nav__me-text">{me.email}</span>
+          </Link>
+          <Link href="/admin/logout" className="aska-nav__logout" title="Log out">
+            Log out
+          </Link>
+        </div>
       )}
     </nav>
   );

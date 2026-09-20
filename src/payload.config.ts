@@ -45,11 +45,6 @@ export default buildConfig({
       beforeDashboard: [
         "@/components/admin/dashboard/AskaDashboard#AskaDashboard",
       ],
-      views: {
-        account: {
-          Component: "@/components/admin/AccountView#AccountView",
-        },
-      },
     },
   },
   collections: [

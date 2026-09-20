@@ -267,13 +267,35 @@ a.btn--style-primary {
   opacity: 0.5;
   font-variant-numeric: tabular-nums;
 }
+.aska-nav__me-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 16px;
+  padding: 10px;
+  border-top: 1px solid color-mix(in srgb, var(--admin-sidebar-text, var(--theme-elevation-1000)) 8%, transparent);
+}
 .aska-nav__me {
   display: flex;
   align-items: center;
   gap: 10px;
-  margin-top: 16px;
-  padding: 10px;
-  border-top: 1px solid color-mix(in srgb, var(--admin-sidebar-text, var(--theme-elevation-1000)) 8%, transparent);
+  min-width: 0;
+  flex: 1;
+  text-decoration: none;
+  color: inherit;
+}
+.aska-nav__logout {
+  flex-shrink: 0;
+  font-size: 12px;
+  padding: 4px 8px;
+  border-radius: 5px;
+  text-decoration: none;
+  opacity: 0.6;
+  color: inherit;
+  &:hover {
+    opacity: 1;
+    background: color-mix(in srgb, var(--admin-sidebar-text, var(--theme-elevation-1000)) 6%, transparent);
+  }
 }
 .aska-nav__avatar {
   display: grid;

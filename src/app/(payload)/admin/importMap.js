@@ -38,7 +38,6 @@ import { AskaNav as AskaNav_a9d4b87e0306b3ddfe97926a52a69591 } from '@/component
 import { Logo as Logo_a44df17d0fc3dcd873dae43dc3bf66bd } from '@/components/admin/Logo'
 import { Icon as Icon_a44df17d0fc3dcd873dae43dc3bf66bd } from '@/components/admin/Logo'
 import { AskaDashboard as AskaDashboard_6c8508850fbfd548768fb9c5f4c275b6 } from '@/components/admin/dashboard/AskaDashboard'
-import { AccountView as AccountView_8f3e6c1b2a4d5e6f7a8b9c0d1e2f3a4b } from '@/components/admin/AccountView'
 import { CollectionCards as CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1 } from '@payloadcms/next/rsc'
 
 /** @type import('payload').ImportMap */
@@ -83,6 +82,5 @@ export const importMap = {
   "@/components/admin/Logo#Logo": Logo_a44df17d0fc3dcd873dae43dc3bf66bd,
   "@/components/admin/Logo#Icon": Icon_a44df17d0fc3dcd873dae43dc3bf66bd,
   "@/components/admin/dashboard/AskaDashboard#AskaDashboard": AskaDashboard_6c8508850fbfd548768fb9c5f4c275b6,
-  "@/components/admin/AccountView#AccountView": AccountView_8f3e6c1b2a4d5e6f7a8b9c0d1e2f3a4b,
   "@payloadcms/next/rsc#CollectionCards": CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1
 }
