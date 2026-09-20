@@ -35,7 +35,6 @@ import { PriceInput as PriceInput_b91672ccd6e8b071c11142ab941fedfb } from '@payl
 import { ActiveCustomFontSelect as ActiveCustomFontSelect_7055b61cd7b07570f5f8e40a62fc2a35 } from '@/components/admin/ActiveCustomFontSelect'
 import { ThemeSlotPreview as ThemeSlotPreview_67eb3395219760f32c20faf41ab6a433 } from '@/components/admin/ThemeSlotPreview'
 import { AskaNav as AskaNav_a9d4b87e0306b3ddfe97926a52a69591 } from '@/components/admin/Nav'
-import { Icon as Icon_a44df17d0fc3dcd873dae43dc3bf66bd } from '@/components/admin/Logo'
 import { Logo as Logo_a44df17d0fc3dcd873dae43dc3bf66bd } from '@/components/admin/Logo'
 import { AskaDashboard as AskaDashboard_6c8508850fbfd548768fb9c5f4c275b6 } from '@/components/admin/dashboard/AskaDashboard'
 import { CollectionCards as CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1 } from '@payloadcms/next/rsc'
@@ -79,7 +78,6 @@ export const importMap = {
   "@/components/admin/ActiveCustomFontSelect#ActiveCustomFontSelect": ActiveCustomFontSelect_7055b61cd7b07570f5f8e40a62fc2a35,
   "@/components/admin/ThemeSlotPreview#ThemeSlotPreview": ThemeSlotPreview_67eb3395219760f32c20faf41ab6a433,
   "@/components/admin/Nav#AskaNav": AskaNav_a9d4b87e0306b3ddfe97926a52a69591,
-  "@/components/admin/Logo#Icon": Icon_a44df17d0fc3dcd873dae43dc3bf66bd,
   "@/components/admin/Logo#Logo": Logo_a44df17d0fc3dcd873dae43dc3bf66bd,
   "@/components/admin/dashboard/AskaDashboard#AskaDashboard": AskaDashboard_6c8508850fbfd548768fb9c5f4c275b6,
   "@payloadcms/next/rsc#CollectionCards": CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1

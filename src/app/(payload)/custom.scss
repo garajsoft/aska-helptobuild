@@ -138,14 +138,6 @@ a.btn--style-primary {
   color: var(--theme-success-500);
 }
 
-/* Hide Payload's Icon slot in the app header (we return null from Icon).
-   Payload's built-in Dashboard breadcrumb already covers that role. */
-.app-header .graphic-icon,
-.app-header .icon--graphic,
-.app-header a[href="/admin"]:first-child:empty,
-.step-nav__step:first-child:empty {
-  display: none !important;
-}
 .step-nav a,
 .step-nav__last {
   white-space: nowrap;

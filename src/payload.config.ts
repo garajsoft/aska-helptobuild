@@ -39,7 +39,6 @@ export default buildConfig({
       Nav: "@/components/admin/Nav#AskaNav",
       graphics: {
         Logo: "@/components/admin/Logo#Logo",
-        Icon: "@/components/admin/Logo#Icon",
       },
       beforeDashboard: [
         "@/components/admin/dashboard/AskaDashboard#AskaDashboard",
