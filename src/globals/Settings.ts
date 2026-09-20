@@ -108,56 +108,6 @@ export const Settings: GlobalConfig = {
           ],
         },
         {
-          label: "Conversions",
-          description:
-            "Define what counts as a conversion for the dashboard's Conversions widget.",
-          fields: [
-            {
-              name: "conversions",
-              type: "group",
-              fields: [
-                {
-                  name: "formSubmissions",
-                  type: "checkbox",
-                  label: "Form submissions",
-                  defaultValue: true,
-                  admin: { description: "Count every submitted form as a conversion." },
-                },
-                {
-                  name: "sales",
-                  type: "checkbox",
-                  label: "Sales",
-                  defaultValue: false,
-                  admin: { description: "Count completed orders as conversions." },
-                },
-                {
-                  name: "goals",
-                  type: "array",
-                  label: "Custom goals",
-                  admin: {
-                    description:
-                      "Anything else that counts as a conversion, tracked by the page a visitor reaches — e.g. a booking request's thank-you page.",
-                  },
-                  fields: [
-                    {
-                      name: "label",
-                      type: "text",
-                      required: true,
-                      admin: { description: 'e.g. "Booking request"' },
-                    },
-                    {
-                      name: "path",
-                      type: "text",
-                      required: true,
-                      admin: { description: "Page path that counts as this conversion, e.g. /booking-confirmed" },
-                    },
-                  ],
-                },
-              ],
-            },
-          ],
-        },
-        {
           label: "Branding",
           description:
             "Site logos and favicon. Exposed at /api/globals/settings?depth=1 and as {{settings.logoLight}}, {{settings.logoDark}}, {{settings.favicon}} placeholders in the editor.",
