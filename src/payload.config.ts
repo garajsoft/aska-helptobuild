@@ -79,15 +79,6 @@ export default buildConfig({
     // Safety net so an RBAC rollout can never lock everyone out of /admin —
     // runs on every boot (dev included); cheap no-op once an admin-capable
     // user already exists.
-        try {
-      const { pushDevSchema } = await import("@payloadcms/drizzle");
-      // @ts-expect-error payload.db is the drizzle adapter; type not re-exported
-      await pushDevSchema(payload.db);
-      payload.logger.info("TEMPORARY: schema pushed to Postgres");
-    } catch (err) {
-      payload.logger.error({ err }, "TEMPORARY schema push failed");
-    }
-
     try {
       const admins = await payload.count({
         collection: "users",
